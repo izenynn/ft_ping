@@ -1,0 +1,3 @@
+[submodule "mini-arg"]
+	path = mini-arg
+	url = https://github.com/izenynn/mini-arg.git
