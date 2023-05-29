@@ -1,3 +1,6 @@
 [submodule "mini-arg"]
 	path = mini-arg
 	url = https://github.com/izenynn/mini-arg.git
+[submodule "lib/libft"]
+	path = lib/libft
+	url = https://github.com/izenynn/libft.git
