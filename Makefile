@@ -32,6 +32,7 @@ CFLAGS = -Wall -Wextra -Werror -Wpedantic -Wshadow
 SRC_DIR = src
 OBJ_DIR = build
 INC_DIR = include
+LIB_DIR = lib
 
 # **************************************************************************** #
 #                                   SOURCES                                    #
@@ -58,11 +59,11 @@ CFLAGS += -I./$(INC_DIR)
 # **************************************************************************** #
 
 LFT_NAME = libft.a
-LFT_DIR = libft
+LFT_DIR = $(LIB_DIR)/libft
 LFT = $(LFT_DIR)/$(LFT_NAME)
 
 LMINIARG_NAME = libminiarg.a
-LMINIARG_DIR = lib/mini-arg
+LMINIARG_DIR = $(LIB_DIR)/mini-arg
 LMINIARG = $(LMINIARG_DIR)/$(LMINIARG_NAME)
 
 CFLAGS += -I./$(LFT_DIR)/include
@@ -109,6 +110,7 @@ $(LMINIARG):
 PHONY += clean
 clean:
 	$(MAKE) fclean -C $(LFT_DIR)
+	$(MAKE) fclean -C $(LMINIARG_DIR)
 	$(RM) $(LFT_NAME)
 	$(RM) $(OBJ_DIR)
 
