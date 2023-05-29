@@ -1,5 +1,5 @@
 [submodule "mini-arg"]
-	path = mini-arg
+	path = lib/mini-arg
 	url = https://github.com/izenynn/mini-arg.git
 [submodule "lib/libft"]
 	path = lib/libft
