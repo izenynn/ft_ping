@@ -15,10 +15,10 @@ make
 ```
 
 ```bash
-./ping DOMAIN/IP
+./ping [OPTIONS...] HOST
 ```
 
 ## Features
 
-- `-v`:
-- `-h`:
+- `-v`: verbose output.
+- `-h`: no idea what this does.
