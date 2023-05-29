@@ -87,3 +87,6 @@ compile_flags.txt
 
 # .test executables
 *.test
+
+# Program
+ft_ping
