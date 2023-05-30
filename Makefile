@@ -72,14 +72,17 @@ CFLAGS += -I./$(LMARG_DIR)/include
 LDFLAGS += -L./$(LFT_DIR) -lft
 LDFLAGS += -L./$(LMARG_DIR) -lmarg
 
+LDLIBS = $(LFT) $(LMARG)
+
 # **************************************************************************** #
 #                                    RULES                                     #
 # **************************************************************************** #
 
+SILENT := all
 PHONY := all
 all: $(NAME)
 
-$(NAME): $(OBJ) $(LFT) $(LMARG)
+$(NAME): $(OBJ) $(LDLIBS)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 PHONY += sanitize
@@ -123,4 +126,5 @@ re: fclean all
 
 -include $(DEP)
 
+.SILENT: $(SILENT)
 .PHONY: $(PHONY)

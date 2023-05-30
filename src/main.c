@@ -7,7 +7,7 @@ const char *marg_program_version = "ft_ping 0.0.1";
 const char *marg_program_bug_address = "<me@izenynn.com>";
 
 static char doc[] = "Send ICMP ECHO_REQUEST packets to network hosts.";
-static char args_doc[] = "HOST ...";
+static char args_doc[] = "HOST";
 
 static struct marg_option options[] = {
 	{'v', "verbose", NULL, 0, false, "verbose output"},
