@@ -62,15 +62,15 @@ LFT_NAME = libft.a
 LFT_DIR = $(LIB_DIR)/libft
 LFT = $(LFT_DIR)/$(LFT_NAME)
 
-LMINIARG_NAME = libminiarg.a
-LMINIARG_DIR = $(LIB_DIR)/mini-arg
-LMINIARG = $(LMINIARG_DIR)/$(LMINIARG_NAME)
+LMARG_NAME = libmarg.a
+LMARG_DIR = $(LIB_DIR)/mini-arg
+LMARG = $(LMARG_DIR)/$(LMARG_NAME)
 
 CFLAGS += -I./$(LFT_DIR)/include
-CFLAGS += -I./$(LMINIARG_DIR)/include
+CFLAGS += -I./$(LMARG_DIR)/include
 
 LDFLAGS += -L./$(LFT_DIR) -lft
-LDFLAGS += -L./$(LMINIARG_DIR) -lminiarg
+LDFLAGS += -L./$(LMARG_DIR) -lmarg
 
 # **************************************************************************** #
 #                                    RULES                                     #
@@ -79,7 +79,7 @@ LDFLAGS += -L./$(LMINIARG_DIR) -lminiarg
 PHONY := all
 all: $(NAME)
 
-$(NAME): $(OBJ) $(LFT) $(LMINIARG)
+$(NAME): $(OBJ) $(LFT) $(LMARG)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 PHONY += sanitize
@@ -104,13 +104,13 @@ $(OBJ_DIR):
 $(LFT):
 	$(MAKE) -C $(LFT_DIR)
 
-$(LMINIARG):
-	$(MAKE) -C $(LMINIARG_DIR)
+$(LMARG):
+	$(MAKE) -C $(LMARG_DIR)
 
 PHONY += clean
 clean:
 	$(MAKE) fclean -C $(LFT_DIR)
-	$(MAKE) fclean -C $(LMINIARG_DIR)
+	$(MAKE) fclean -C $(LMARG_DIR)
 	$(RM) $(LFT_NAME)
 	$(RM) $(OBJ_DIR)
 
