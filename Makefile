@@ -99,7 +99,7 @@ thread: CFLAGS += -g3 -fsanitize=thread
 thread: $(NAME)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(OBJ_DIR):
 	$(MKDIR) $(OBJ_DIR)
