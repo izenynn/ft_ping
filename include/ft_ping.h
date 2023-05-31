@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#include "miniarg.h"
 #include "libft/ft_lst.h"
 
 struct arguments {
@@ -13,6 +14,9 @@ struct arguments {
 
 extern const char *progname;
 
+// args.c
+int parse_opt(int key, const char *arg, struct marg_state *state);
+	
 // error.c
 void error_exit(const int err, const char *fmt, ...);
 
