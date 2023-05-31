@@ -2,6 +2,14 @@
 #include <stdlib.h>
 #include <sysexits.h>
 
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/ip_icmp.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <sys/time.h>
+
 #include "miniarg.h"
 #include "libft/ft_lst.h"
 
@@ -31,12 +39,26 @@ int main(int argc, char *argv[])
 		.count = -1
 	};
 
+	// Arguments 
 	progname = argv[0];
 	marg_parse(&marg, argc, argv, &args);
 
-	// TODO ft_ping
-	printf("pinging nothing...\n");
+	// Hardcoded ping for first host only
+	struct addrinfo *addr = get_host_info(args.args->data, AF_INET);
+
+	int sockfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+	if (sockfd < 0) {
+		perror("socket() error");
+		return 1;
+	}
+
+	send_ping(sockfd, addr);
+	receive_pong(sockfd);
+
+	freeaddrinfo(addr);
+	close(sockfd);
 	
+	// Clean up
 	ft_lstclear(&args.args, NULL);
 
 	return EX_OK;

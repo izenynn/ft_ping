@@ -43,6 +43,8 @@ SRC_FILES = \
 	args.c			\
 	error.c			\
 	ping.c			\
+	pong.c			\
+	dns.c			\
 
 OBJ_FILES = $(SRC_FILES:%.c=%.o)
 
