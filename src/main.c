@@ -78,12 +78,7 @@ int main(int argc, char *argv[])
 	printf(" ARGS:\n");
 	ft_lstiter(args.args, print_data);
 
-	for (t_list *it = args.args, *prev; it != NULL;) {
-		prev = it;
-		it = it->next;
-		free(prev);
-	}
-	args.args = NULL;
+	ft_lstclear(&args.args, NULL);
 
 	return 0;
 }
