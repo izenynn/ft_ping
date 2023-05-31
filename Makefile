@@ -23,7 +23,7 @@ RM = rm -rf
 
 CC = gcc
 CPPFLAGS = -MMD
-CFLAGS = -Wall -Wextra -Werror -Wpedantic -Wshadow
+CFLAGS = -Wall -Wextra -Werror -Wpedantic -Wshadow -Wimplicit
 
 # **************************************************************************** #
 #                                     DIRS                                     #
