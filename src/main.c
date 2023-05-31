@@ -23,10 +23,6 @@ static struct marg_option options[] = {
 
 static struct marg marg = {options, parse_opt, args_doc, doc};
 
-static void print_data(void *data)
-{
-	printf("  %s\n", (char *)data);
-}
 int main(int argc, char *argv[])
 {
 	struct arguments args = {
@@ -38,12 +34,9 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 	marg_parse(&marg, argc, argv, &args);
 
-	printf("Options:\n");
-	printf(" -v: %s\n", args.verbose ? "true" : "false");
-	printf(" -c: %d\n", args.count);
-	printf(" ARGS:\n");
-	ft_lstiter(args.args, print_data);
-
+	// TODO ft_ping
+	printf("pinging nothing...\n");
+	
 	ft_lstclear(&args.args, NULL);
 
 	return EX_OK;
