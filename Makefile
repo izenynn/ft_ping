@@ -42,6 +42,7 @@ SRC_FILES = \
 	main.c			\
 	args.c			\
 	error.c			\
+	ping.c			\
 
 OBJ_FILES = $(SRC_FILES:%.c=%.o)
 
