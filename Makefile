@@ -40,6 +40,7 @@ LIB_DIR = lib
 
 SRC_FILES = \
 	main.c			\
+	error.c			\
 
 OBJ_FILES = $(SRC_FILES:%.c=%.o)
 
