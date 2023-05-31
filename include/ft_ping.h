@@ -6,6 +6,7 @@
 struct arguments {
 	const char *args[1];
 	bool verbose;
+	int count;
 };
 
 #endif // FTPING_FTPING_H_
