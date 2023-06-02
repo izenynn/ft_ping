@@ -17,6 +17,8 @@ MV = mv
 MKDIR = mkdir -p
 RM = rm -rf
 
+MAX_OPTIONS = 5
+
 # **************************************************************************** #
 #                                   COMPILER                                   #
 # **************************************************************************** #
@@ -113,7 +115,7 @@ $(LFT):
 	$(MAKE) -C $(LFT_DIR)
 
 $(LMARG):
-	$(MAKE) -C $(LMARG_DIR)
+	$(MAKE) -C $(LMARG_DIR) MAX_OPTIONS=$(MAX_OPTIONS)
 
 PHONY += clean
 clean:

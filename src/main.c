@@ -24,8 +24,8 @@ static char doc[] = "Send ICMP ECHO_REQUEST packets to network hosts.";
 static char args_doc[] = "HOST ...";
 
 static struct marg_option options[] = {
-	{'v', "verbose", NULL, 0, false, "verbose output"},
-	{'c', "count", NULL, OPTION_ARG | OPTION_ARG_REQUIRED, false, "stop after sending N packets"},
+	{'v', "verbose", NULL, 0, "verbose output"},
+	{'c', "count", NULL, OPTION_ARG | OPTION_ARG_REQUIRED, "stop after sending N packets"},
 	{0}
 };
 
