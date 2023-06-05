@@ -2,18 +2,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <sysexits.h>
+
+#include "ft_ping.h"
 
 struct addrinfo *get_host_info(char* host, int family)
 {
-	struct addrinfo hints, *res;
+	struct addrinfo hints;
+	struct addrinfo *res;
+	int err;
+
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_RAW;
 	hints.ai_protocol = IPPROTO_ICMP;
 
-	if (getaddrinfo(host, NULL, &hints, &res) != 0) {
-		perror("getaddrinfo() error");
-		exit(1);
+	err = getaddrinfo(host, NULL, &hints, &res);
+	if (err != 0) {
+		if (err == EAI_SYSTEM)
+			error("looking up %s: %s", host, strerror(errno));
+		else
+			error("looking up %s: %s", host, gai_strerror(err));
+		return NULL;
 	}
+
 	return res;
 }

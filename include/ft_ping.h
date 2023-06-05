@@ -19,6 +19,7 @@ extern const char *progname;
 int parse_opt(int key, const char *arg, struct marg_state *state);
 	
 // error.c
+void error(const char *fmt, ...);
 void error_exit(const int err, const char *fmt, ...);
 
 // ping.c
