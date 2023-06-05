@@ -9,7 +9,7 @@ struct addrinfo *get_host_info(char* host, int family)
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_RAW;
-	// hints.ai_protocol = IPPROTO_ICMP;
+	hints.ai_protocol = IPPROTO_ICMP;
 
 	if (getaddrinfo(host, NULL, &hints, &res) != 0) {
 		perror("getaddrinfo() error");
@@ -17,4 +17,3 @@ struct addrinfo *get_host_info(char* host, int family)
 	}
 	return res;
 }
-
