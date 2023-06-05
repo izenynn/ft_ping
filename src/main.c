@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sysexits.h>
-
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/ip_icmp.h>
@@ -9,6 +8,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <signal.h>
+#include <errno.h>
 
 #include "miniarg.h"
 #include "libft/ft_lst.h"
@@ -43,6 +44,11 @@ int main(int argc, char *argv[])
 	progname = argv[0];
 	marg_parse(&marg, argc, argv, &args);
 
+	// Signals
+	if (signal(SIGINT, sig_int) == SIG_ERR || signal(SIGALRM, sig_alarm) == SIG_ERR) {
+		error_exit(EX_OSERR, "%s", strerror(errno));
+	}
+
 	// Hardcoded ping for first host only
 	struct addrinfo *addr = get_host_info(args.args->data, AF_INET);
 
@@ -52,6 +58,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	printf("PING %s %d(%d) bytes of data.\n", g_ping.dest_addr, ICMP_PAYLOAD_SIZE, PACKET_SIZE);
 	send_ping(sockfd, addr);
 	receive_pong(sockfd);
 
