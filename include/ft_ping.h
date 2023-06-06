@@ -24,7 +24,7 @@ struct arguments {
 struct ping_pkt {
 	struct icmphdr hdr;
 	char payload[PKT_SIZE - sizeof(struct icmphdr)];
-}
+};
 
 extern const char *progname;
 

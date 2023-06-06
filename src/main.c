@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	printf("PING %s %d(%d) bytes of data.\n", g_ping.dest_addr, ICMP_PAYLOAD_SIZE, PACKET_SIZE);
+	//printf("PING %s %d(%d) bytes of data.\n", g_ping.dest_addr, ICMP_PAYLOAD_SIZE, PKT_SIZE);
 	send_ping(sockfd, addr);
 	receive_pong(sockfd);
 
