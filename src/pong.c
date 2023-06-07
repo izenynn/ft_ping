@@ -7,8 +7,6 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
-#include "libft/ft_fd.h"
-
 void receive_pong(int sockfd)
 {
 	char buffer[1024];
