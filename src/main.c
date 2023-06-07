@@ -36,7 +36,7 @@ static struct marg marg = {options, parse_opt, args_doc, doc};
 
 // Ping
 
-int loop = 0;
+int loop = 1;
 
 int main(int argc, char *argv[])
 {
@@ -71,8 +71,11 @@ int main(int argc, char *argv[])
 		ip,
 		sizeof(((struct ping_pkt *)0)->payload));
 
-	send_ping(sockfd, addr);
-	receive_pong(sockfd);
+	while (loop) {
+		send_ping(sockfd, addr);
+		receive_pong(sockfd);
+		usleep(PING_SLEEP_RATE);
+	}
 
 	freeaddrinfo(addr);
 	close(sockfd);

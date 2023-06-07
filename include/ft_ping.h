@@ -11,8 +11,8 @@
 #include "miniarg.h"
 #include "libft/ft_lst.h"
 
-#define PKT_SIZE 84
-
+#define PING_PKT_SIZE 84
+#define PING_SLEEP_RATE 1000000
 #define RECV_TIMEOUT 1
 
 struct arguments {
@@ -24,7 +24,7 @@ struct arguments {
 struct ping_pkt {
 	struct iphdr iphdr;
 	struct icmphdr icmphdr;
-	char payload[PKT_SIZE - sizeof(struct icmphdr) - sizeof(struct iphdr)];
+	char payload[PING_PKT_SIZE - sizeof(struct icmphdr) - sizeof(struct iphdr)];
 };
 
 extern const char *progname;
