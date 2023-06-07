@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
+#include "libft/ft_fd.h"
+
 void receive_pong(int sockfd)
 {
 	char buffer[1024];
@@ -23,8 +25,15 @@ void receive_pong(int sockfd)
 	gettimeofday(&end, NULL);
 	long mtime = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_usec - start.tv_usec) / 1000;
 	
-	struct icmp* icmp_packet = (struct icmp*)buffer;
-	if (icmp_packet->icmp_type != ICMP_ECHOREPLY) {
+	struct iphdr *ip_packet = (struct iphdr *)buffer;
+	// iphdr->ihl is in 32-bit words, so we shift to get the length in bytes
+	int ip_header_len = ip_packet->ihl << 2;
+	struct icmphdr *icmp_packet = (struct icmphdr *)(buffer + ip_header_len);
+
+	// printf("type offset: %zu\n", (size_t)&(((struct icmphdr *)0)->type));
+	// ft_putmem_fd(icmp_packet, sizeof(struct icmphdr), 1);
+	// printf("type: %d\n", icmp_packet->type);
+	if (icmp_packet->type != ICMP_ECHOREPLY) {
 		fprintf(stderr, "Received packet is not an ICMP echo reply\n");
 		exit(1);
 	}
