@@ -21,7 +21,7 @@ void receive_pong(int sockfd)
 	}
 	
 	gettimeofday(&end, NULL);
-	long mtime = (end.tv_sec - start.tv_sec) * 1000 + (end.tv_usec - start.tv_usec) / 1000;
+	double mtime = (double)(end.tv_sec - start.tv_sec) * 1000.0 + (double)(end.tv_usec - start.tv_usec) / 1000.0;
 	
 	struct iphdr *ip_packet = (struct iphdr *)buffer;
 	// iphdr->ihl is in 32-bit words, so we shift to get the length in bytes
@@ -36,5 +36,5 @@ void receive_pong(int sockfd)
 		exit(1);
 	}
 	
-	printf("Received packet from server, RTT = %ld ms\n", mtime);
+	printf("Received packet from server, RTT = %.3f ms\n", mtime);
 }
