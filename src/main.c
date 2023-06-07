@@ -64,10 +64,13 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	char ip[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, ip, INET_ADDRSTRLEN),
 	printf("PING %s (%s): %lu data bytes\n",
 		(char *)args.args->data,
-		inet_ntoa(((struct sockaddr_in *)addr->ai_addr)->sin_addr),
+		ip,
 		sizeof(((struct ping_pkt *)0)->payload));
+
 	send_ping(sockfd, addr);
 	receive_pong(sockfd);
 
