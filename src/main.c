@@ -16,6 +16,8 @@
 
 #include "ft_ping.h"
 
+// Arguments
+
 const char *progname = NULL;
 
 const char *marg_program_version = "ft_ping 0.0.1";
@@ -31,6 +33,10 @@ static struct marg_option options[] = {
 };
 
 static struct marg marg = {options, parse_opt, args_doc, doc};
+
+// Ping
+
+int loop = 0;
 
 int main(int argc, char *argv[])
 {
@@ -58,7 +64,10 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	//printf("PING %s %d(%d) bytes of data.\n", g_ping.dest_addr, ICMP_PAYLOAD_SIZE, PKT_SIZE);
+	printf("PING %s (%s): %lu data bytes\n",
+		(char *)args.args->data,
+		inet_ntoa(((struct sockaddr_in *)addr->ai_addr)->sin_addr),
+		sizeof(((struct ping_pkt *)0)->payload));
 	send_ping(sockfd, addr);
 	receive_pong(sockfd);
 

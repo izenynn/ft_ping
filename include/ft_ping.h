@@ -22,11 +22,13 @@ struct arguments {
 };
 
 struct ping_pkt {
-	struct icmphdr hdr;
-	char payload[PKT_SIZE - sizeof(struct icmphdr)];
+	struct icmp icmp;
+	char payload[PKT_SIZE - sizeof(struct icmp)];
 };
 
 extern const char *progname;
+
+extern int loop;
 
 // args.c
 int parse_opt(int key, const char *arg, struct marg_state *state);
