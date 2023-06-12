@@ -37,6 +37,28 @@ static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq) {
 	}
 }
 
+static void ping_finish(struct ping_stat *const stat, const char *const host, int seq)
+{
+	// FIXME this should be RECEIVED packages and not `seq`
+	double total = seq;
+	double avg = stat->tsum / total;
+	double stddev = ping_sqrt(stat->tsumsq / total - avg * avg);
+
+	printf("--- %s ping statistics ---\n", host);
+	printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
+		seq,
+		0,
+		0);
+
+	if (seq > 0) {
+		printf("round-trip min/avg/max/stddev = %.3lf/%.3lf/%.3lf/%.3lf ms\n",
+			stat->tmin,
+			avg,
+			stat->tmax,
+			stddev);
+	}
+}
+
 void ping(void *host)
 {
 	static char ip[INET_ADDRSTRLEN] = {0};
@@ -80,18 +102,5 @@ void ping(void *host)
 	freeaddrinfo(addr);
 	close(sockfd);
 
-	// TODO print stats
-	printf("--- %s ping statistics ---\n", (char *)host);
-	printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
-		seq,
-		0,
-		0);
-	// TODO change seq for number of received packages
-	if (seq > 0) {
-		printf("round-trip min/avg/max/stddev = %.3lf/%.3lf/%.3lf/%.3lf ms\n",
-			stat.tmin,
-			stat.tsum / seq,
-			stat.tmax,
-			0.0);
-	}
+	ping_finish(&stat, host, seq);
 }

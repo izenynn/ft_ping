@@ -49,6 +49,7 @@ SRC_FILES = \
 	pong.c			\
 	dns.c			\
 	signal.c		\
+	utils.c			\
 
 OBJ_FILES = $(SRC_FILES:%.c=%.o)
 
