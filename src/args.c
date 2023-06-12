@@ -32,7 +32,7 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 	case 'c':
 		if (isnum(arg) == false)
 			error_exit(marg_err_exit_status, "invalid value ('%s')", arg);
-		args->count = ft_atoi(arg);
+		args->count = (uint16_t)ft_atoi(arg);
 		//if (arg->count < 1)
 		//	error_exit(marg_err_exit_status, "invalid argument ('%s') out range: %s", arg);
 		break;

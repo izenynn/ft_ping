@@ -8,10 +8,8 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
-void pong(int sockfd, struct addrinfo *addr)
+void pong(const int sockfd, const char *const host)
 {
-	static char ip[INET_ADDRSTRLEN] = {0};
-
 	ssize_t size;
 	char buffer[1024];
 	struct timeval start, end;
@@ -38,11 +36,10 @@ void pong(int sockfd, struct addrinfo *addr)
 		exit(1);
 	}
 	
-	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, ip, INET_ADDRSTRLEN),
-	printf("%zd bytes from %s: icmp_seq=%d ttl=%d time=%.3lf ms\n",
-		size,
-		ip,
-		icmp_packet->un.echo.sequence,
+	printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3lf ms\n",
+		ntohs(ip_packet->tot_len) - ip_header_len,
+		host,
+		ntohs(icmp_packet->un.echo.sequence),
 		ip_packet->ttl,
 		mtime);
 }

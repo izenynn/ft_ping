@@ -7,7 +7,7 @@
 
 #include "ft_ping.h"
 
-struct addrinfo *get_host_info(char* host, int family)
+struct addrinfo *get_host_info(const char *const host, int family)
 {
 	struct addrinfo hints;
 	struct addrinfo *res;

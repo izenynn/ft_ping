@@ -19,7 +19,7 @@
 struct arguments {
 	t_list *args;
 	bool verbose;
-	long count;
+	uint16_t count;
 };
 
 struct ping_pkt {
@@ -48,10 +48,10 @@ void set_icmphdr(void *pkt, uint16_t seq);
 void ping(void *host);
 
 // pong.c
-void pong(int sockfd, struct addrinfo *addr);
+void pong(const int sockfd, const char *const host);
 
 // dns.c
-struct addrinfo *get_host_info(char* host, int family);
+struct addrinfo *get_host_info(const char *const host, int family);
 
 // signal.c
 void sig_int(int sig);

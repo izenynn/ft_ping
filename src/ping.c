@@ -14,12 +14,12 @@
 
 #include "ft_ping.h"
 
-static void send_pkt(int sockfd, struct addrinfo *addr) {
+static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq) {
 	struct ping_pkt pkt;
 
 	set_iphdr(&pkt, ((struct sockaddr_in *)addr->ai_addr)->sin_addr.s_addr);
 	set_payload(&pkt);
-	set_icmphdr(&pkt, 0);
+	set_icmphdr(&pkt, seq);
 
 	/*
 	 * IP_HDRINCL must be set on the socket so that
@@ -38,13 +38,15 @@ static void send_pkt(int sockfd, struct addrinfo *addr) {
 
 void ping(void *host)
 {
-	static char ip[INET_ADDRSTRLEN];
+	static char ip[INET_ADDRSTRLEN] = {0};
+	uint16_t seq = 0;
 	struct addrinfo *addr;
 	int sockfd;
 
 	addr = get_host_info(host, AF_INET);
 	sockfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
 	if (sockfd < 0) {
+		// TODO use the error.c functions! perror() is forbidden!
 		perror("socket() error");
 		exit(1);
 	}
@@ -56,8 +58,9 @@ void ping(void *host)
 		sizeof(((struct ping_pkt *)0)->payload));
 
 	while (loop) {
-		send_pkt(sockfd, addr);
-		pong(sockfd, addr);
+		send_pkt(sockfd, addr, seq);
+		pong(sockfd, ip);
+		++seq;
 		usleep(PING_SLEEP_RATE);
 	}
 

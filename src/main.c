@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	struct arguments args = {
 		.args = NULL,
 		.verbose = false,
-		.count = LONG_MAX
+		.count = UINT16_MAX
 	};
 
 	// Arguments
