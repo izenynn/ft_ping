@@ -1,21 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
 
-void receive_pong(int sockfd)
+void pong(int sockfd, struct addrinfo *addr)
 {
+	static char ip[INET_ADDRSTRLEN] = {0};
+
+	ssize_t size;
 	char buffer[1024];
-	memset(buffer, 0, sizeof(buffer));
-	
 	struct timeval start, end;
+
+	memset(buffer, 0, sizeof(buffer));
 	gettimeofday(&start, NULL);
 	
-	if (recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL) <= 0) {
+	size = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
+	if (size <= 0) {
 		perror("recvfrom() error");
 		exit(1);
 	}
@@ -28,13 +33,16 @@ void receive_pong(int sockfd)
 	int ip_header_len = ip_packet->ihl << 2;
 	struct icmphdr *icmp_packet = (struct icmphdr *)(buffer + ip_header_len);
 
-	// printf("type offset: %zu\n", (size_t)&(((struct icmphdr *)0)->type));
-	// ft_putmem_fd(icmp_packet, sizeof(struct icmphdr), 1);
-	// printf("type: %d\n", icmp_packet->type);
 	if (icmp_packet->type != ICMP_ECHOREPLY) {
 		fprintf(stderr, "Received packet is not an ICMP echo reply\n");
 		exit(1);
 	}
 	
-	printf("Received packet from server, RTT = %.3f ms\n", mtime);
+	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, ip, INET_ADDRSTRLEN),
+	printf("%zd bytes from %s: icmp_seq=%d ttl=%d time=%.3lf ms\n",
+		size,
+		ip,
+		icmp_packet->un.echo.sequence,
+		ip_packet->ttl,
+		mtime);
 }

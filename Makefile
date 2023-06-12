@@ -44,6 +44,7 @@ SRC_FILES = \
 	main.c			\
 	args.c			\
 	error.c			\
+	pkt.c			\
 	ping.c			\
 	pong.c			\
 	dns.c			\

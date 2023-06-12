@@ -6,36 +6,61 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
 #include <sys/time.h>
+#include <unistd.h>
 
-static unsigned short checksum(void *b, int len) {
-	unsigned short *buf = b;
-	unsigned int sum = 0;
-	unsigned short result;
+#include "libft/ft_mem.h"
+#include "libft/ft_fd.h"
 
-	for (sum = 0; len > 1; len -= 2)
-		sum += *buf++;
-	if (len == 1)
-		sum += *(unsigned char*)buf;
-	sum = (sum >> 16) + (sum & 0xFFFF);
-	sum += (sum >> 16);
-	result = (unsigned short)~sum;
-	return result;
-}
+#include "ft_ping.h"
 
-void send_ping(int sockfd, struct addrinfo *addr) {
-	struct icmp header;
-	memset(&header, 0, sizeof header);
-	header.icmp_type = ICMP_ECHO;
-	header.icmp_code = 0;
-	header.icmp_id = (unsigned short)getpid();
-	header.icmp_seq = 1;
-	header.icmp_cksum = 0;
-	header.icmp_cksum = checksum(&header, sizeof(header));
+static void send_pkt(int sockfd, struct addrinfo *addr) {
+	struct ping_pkt pkt;
 
-	if (sendto(sockfd, &header, sizeof header, 0, addr->ai_addr, addr->ai_addrlen) <= 0) {
+	set_iphdr(&pkt, ((struct sockaddr_in *)addr->ai_addr)->sin_addr.s_addr);
+	set_payload(&pkt);
+	set_icmphdr(&pkt, 0);
+
+	/*
+	 * IP_HDRINCL must be set on the socket so that
+	 * the kernel does not attempt to automatically add
+	 * a default ip header to the packet
+	 */
+	int optval = 1;
+	setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
+
+	//ft_putmem_fd(&pkt, sizeof(struct ping_pkt), 1);
+	if (sendto(sockfd, &pkt, sizeof(struct ping_pkt), 0, addr->ai_addr, addr->ai_addrlen) <= 0) {
 		perror("sendto() error");
 		exit(1);
 	}
+}
+
+void ping(void *host)
+{
+	static char ip[INET_ADDRSTRLEN];
+	struct addrinfo *addr;
+	int sockfd;
+
+	addr = get_host_info(host, AF_INET);
+	sockfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+	if (sockfd < 0) {
+		perror("socket() error");
+		exit(1);
+	}
+
+	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, ip, INET_ADDRSTRLEN),
+	printf("PING %s (%s): %lu data bytes\n",
+		(char *)host,
+		ip,
+		sizeof(((struct ping_pkt *)0)->payload));
+
+	while (loop) {
+		send_pkt(sockfd, addr);
+		pong(sockfd, addr);
+		usleep(PING_SLEEP_RATE);
+	}
+
+	freeaddrinfo(addr);
+	close(sockfd);
 }

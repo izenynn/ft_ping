@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <errno.h>
+#include <limits.h>
 
 #include "miniarg.h"
 #include "libft/ft_lst.h"
@@ -43,10 +44,10 @@ int main(int argc, char *argv[])
 	struct arguments args = {
 		.args = NULL,
 		.verbose = false,
-		.count = -1
+		.count = LONG_MAX
 	};
 
-	// Arguments 
+	// Arguments
 	progname = argv[0];
 	marg_parse(&marg, argc, argv, &args);
 
@@ -55,31 +56,9 @@ int main(int argc, char *argv[])
 		error_exit(EX_OSERR, "%s", strerror(errno));
 	}
 
-	// Hardcoded ping for first host only
-	struct addrinfo *addr = get_host_info(args.args->data, AF_INET);
+	// Ping
+	ft_lstiter(args.args, ping);
 
-	int sockfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-	if (sockfd < 0) {
-		perror("socket() error");
-		return 1;
-	}
-
-	char ip[INET_ADDRSTRLEN];
-	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, ip, INET_ADDRSTRLEN),
-	printf("PING %s (%s): %lu data bytes\n",
-		(char *)args.args->data,
-		ip,
-		sizeof(((struct ping_pkt *)0)->payload));
-
-	while (loop) {
-		send_ping(sockfd, addr);
-		receive_pong(sockfd);
-		usleep(PING_SLEEP_RATE);
-	}
-
-	freeaddrinfo(addr);
-	close(sockfd);
-	
 	// Clean up
 	ft_lstclear(&args.args, NULL);
 

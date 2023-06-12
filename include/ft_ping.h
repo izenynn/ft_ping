@@ -2,6 +2,7 @@
 #define FTPING_FTPING_H_
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/ip_icmp.h>
@@ -18,7 +19,7 @@
 struct arguments {
 	t_list *args;
 	bool verbose;
-	int count;
+	long count;
 };
 
 struct ping_pkt {
@@ -38,11 +39,16 @@ int parse_opt(int key, const char *arg, struct marg_state *state);
 void error(const char *fmt, ...);
 void error_exit(const int err, const char *fmt, ...);
 
+// pkt.c
+void set_iphdr(void *pkt, in_addr_t daddr);
+void set_payload(void *pkt);
+void set_icmphdr(void *pkt, uint16_t seq);
+	
 // ping.c
-void send_ping(int sockfd, struct addrinfo *addr);
+void ping(void *host);
 
 // pong.c
-void receive_pong(int sockfd);
+void pong(int sockfd, struct addrinfo *addr);
 
 // dns.c
 struct addrinfo *get_host_info(char* host, int family);
