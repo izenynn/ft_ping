@@ -41,7 +41,7 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		if (new == NULL) {
 			error_exit(EX_OSERR, "%s", strerror(errno));
 		}
-		ft_lstadd_back(&args->args, new);
+		ft_lstadd_back(&args->hosts, new);
 		break;
 	case MARG_KEY_END:
 		if (state->arg_num < 1) {

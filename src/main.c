@@ -37,19 +37,20 @@ static struct marg marg = {options, parse_opt, args_doc, doc};
 
 // Ping
 
-int loop = 1;
+struct progconf progconf = {
+	.args = {
+		.hosts = NULL,
+		.verbose = false,
+		.count = UINT16_MAX
+	},
+	.loop = true
+};
 
 int main(int argc, char *argv[])
 {
-	struct arguments args = {
-		.args = NULL,
-		.verbose = false,
-		.count = UINT16_MAX
-	};
-
 	// Arguments
 	progname = argv[0];
-	marg_parse(&marg, argc, argv, &args);
+	marg_parse(&marg, argc, argv, &progconf.args);
 
 	// Signals
 	if (signal(SIGINT, sig_int) == SIG_ERR || signal(SIGALRM, sig_alarm) == SIG_ERR) {
@@ -57,10 +58,10 @@ int main(int argc, char *argv[])
 	}
 
 	// Ping
-	ft_lstiter(args.args, ping);
+	ft_lstiter(progconf.args.hosts, ping);
 
 	// Clean up
-	ft_lstclear(&args.args, NULL);
+	ft_lstclear(&progconf.args.hosts, NULL);
 
 	return EX_OK;
 }

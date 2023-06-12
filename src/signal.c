@@ -5,7 +5,7 @@
 void sig_int(int sig)
 {
 	(void)sig;
-	loop = 0;
+	progconf.loop = false;
 }
 
 void sig_alarm(int sig)

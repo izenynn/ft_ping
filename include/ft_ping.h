@@ -17,7 +17,7 @@
 #define RECV_TIMEOUT 1
 
 struct arguments {
-	t_list *args;
+	t_list *hosts;
 	bool verbose;
 	uint16_t count;
 };
@@ -28,9 +28,14 @@ struct ping_pkt {
 	char payload[PING_PKT_SIZE - sizeof(struct icmphdr) - sizeof(struct iphdr)];
 };
 
+struct progconf {
+	struct arguments args;
+	bool loop;
+};
+
 extern const char *progname;
 
-extern int loop;
+extern struct progconf progconf;
 
 // args.c
 int parse_opt(int key, const char *arg, struct marg_state *state);

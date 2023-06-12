@@ -57,7 +57,7 @@ void ping(void *host)
 		ip,
 		sizeof(((struct ping_pkt *)0)->payload));
 
-	while (loop) {
+	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
 		pong(sockfd, ip);
 		++seq;
@@ -66,4 +66,6 @@ void ping(void *host)
 
 	freeaddrinfo(addr);
 	close(sockfd);
+
+	// TODO print stats
 }
