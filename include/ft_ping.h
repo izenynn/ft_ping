@@ -28,6 +28,13 @@ struct ping_pkt {
 	char payload[PING_PKT_SIZE - sizeof(struct icmphdr) - sizeof(struct iphdr)];
 };
 
+struct ping_stat {
+	double tmin;
+	double tmax;
+	double tsum;
+	double tsumsq;
+};
+
 struct progconf {
 	struct arguments args;
 	bool loop;
@@ -53,7 +60,7 @@ void set_icmphdr(void *pkt, uint16_t seq);
 void ping(void *host);
 
 // pong.c
-void pong(const int sockfd, const char *const host);
+void pong(const int sockfd, struct ping_stat *const stat, const char *const host);
 
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);

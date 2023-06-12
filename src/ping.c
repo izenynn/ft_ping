@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <float.h>
 
 #include "libft/ft_mem.h"
 #include "libft/ft_fd.h"
@@ -42,6 +43,13 @@ void ping(void *host)
 	uint16_t seq = 0;
 	struct addrinfo *addr;
 	int sockfd;
+	struct timeval tv_out;
+	struct ping_stat stat = {
+		.tmin = DBL_MAX,
+		.tmax = DBL_MIN,
+		.tsum = 0,
+		.tsumsq = 0
+	};
 
 	addr = get_host_info(host, AF_INET);
 	sockfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
@@ -50,6 +58,9 @@ void ping(void *host)
 		perror("socket() error");
 		exit(1);
 	}
+	tv_out.tv_sec = RECV_TIMEOUT;
+	tv_out.tv_usec = 0;
+	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
 
 	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, ip, INET_ADDRSTRLEN),
 	printf("PING %s (%s): %lu data bytes\n",
@@ -59,8 +70,10 @@ void ping(void *host)
 
 	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
-		pong(sockfd, ip);
+		pong(sockfd, &stat, ip);
 		++seq;
+		if (!progconf.loop || seq >= progconf.args.count)
+			break;
 		usleep(PING_SLEEP_RATE);
 	}
 
@@ -68,4 +81,17 @@ void ping(void *host)
 	close(sockfd);
 
 	// TODO print stats
+	printf("--- %s ping statistics ---\n", (char *)host);
+	printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
+		seq,
+		0,
+		0);
+	// TODO change seq for number of received packages
+	if (seq > 0) {
+		printf("round-trip min/avg/max/stddev = %.3lf/%.3lf/%.3lf/%.3lf ms\n",
+			stat.tmin,
+			stat.tsum / seq,
+			stat.tmax,
+			0.0);
+	}
 }

@@ -8,7 +8,9 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
-void pong(const int sockfd, const char *const host)
+#include "ft_ping.h"
+
+void pong(const int sockfd, struct ping_stat *const stat, const char *const host)
 {
 	ssize_t size;
 	char buffer[1024];
@@ -19,8 +21,9 @@ void pong(const int sockfd, const char *const host)
 	
 	size = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
 	if (size <= 0) {
-		perror("recvfrom() error");
-		exit(1);
+		// perror("recvfrom() error");
+		// exit(1);
+		return;
 	}
 	
 	gettimeofday(&end, NULL);
@@ -32,10 +35,18 @@ void pong(const int sockfd, const char *const host)
 	struct icmphdr *icmp_packet = (struct icmphdr *)(buffer + ip_header_len);
 
 	if (icmp_packet->type != ICMP_ECHOREPLY) {
-		fprintf(stderr, "Received packet is not an ICMP echo reply\n");
-		exit(1);
+		// fprintf(stderr, "Received packet is not an ICMP echo reply\n");
+		// exit(1);
+		return;
 	}
-	
+
+	if (mtime < stat->tmin)
+		stat->tmin = mtime;
+	if (mtime > stat->tmax)
+		stat->tmax = mtime;
+	stat->tsum += mtime;
+	stat->tsumsq += mtime * mtime;
+
 	printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3lf ms\n",
 		ntohs(ip_packet->tot_len) - ip_header_len,
 		host,
