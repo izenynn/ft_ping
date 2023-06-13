@@ -46,17 +46,19 @@ static void ping_start(struct addrinfo *addr)
 
 static void ping_finish(struct ping_stat *const stat)
 {
-	double total = (double)progconf.ping_num_recv;
-	double avg = stat->tsum / total;
-	double stddev = ping_sqrt(stat->tsumsq / total - avg * avg);
-
+	size_t perc = progconf.ping_num_xmit > 0
+		? (progconf.ping_num_xmit - progconf.ping_num_recv) / progconf.ping_num_xmit * 100
+		: 0;
 	printf("--- %s ping statistics ---\n", progconf.host);
 	printf("%zu packets transmitted, %zu packets received, %zu%% packet loss\n",
 		progconf.ping_num_xmit,
 		progconf.ping_num_recv,
-		(progconf.ping_num_xmit - progconf.ping_num_recv) / progconf.ping_num_xmit * 100);
+		perc);
 
-	if (total > 0) {
+	if (progconf.ping_num_recv > 0) {
+		double total = (double)progconf.ping_num_recv;
+		double avg = stat->tsum / total;
+		double stddev = ping_sqrt(stat->tsumsq / total - avg * avg);
 		printf("round-trip min/avg/max/stddev = %.3lf/%.3lf/%.3lf/%.3lf ms\n",
 			stat->tmin,
 			avg,
