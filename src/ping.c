@@ -97,8 +97,10 @@ void ping(void *host)
 		(char *)host,
 		progconf.host,
 		sizeof(((struct ping_pkt *)0)->payload));
-	if (progconf.args.verbose)
-		printf("TODO");
+	if (progconf.args.verbose) {
+		pid_t pid = getpid();
+		printf(", id 0x%04x = %d", pid, pid);
+	}
 	printf("\n");
 
 	while (progconf.loop) {
