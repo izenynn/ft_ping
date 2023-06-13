@@ -46,14 +46,15 @@ static void ping_start(struct addrinfo *addr)
 
 static void ping_finish(struct ping_stat *const stat)
 {
-	size_t perc = progconf.ping_num_xmit > 0
-		? (progconf.ping_num_xmit - progconf.ping_num_recv) / progconf.ping_num_xmit * 100
+	int perc = progconf.ping_num_xmit > 0
+		? (int)((progconf.ping_num_xmit - progconf.ping_num_recv) / progconf.ping_num_xmit * 100)
 		: 0;
+	fflush(stdout);
 	printf("--- %s ping statistics ---\n", progconf.host);
-	printf("%zu packets transmitted, %zu packets received, %zu%% packet loss\n",
-		progconf.ping_num_xmit,
-		progconf.ping_num_recv,
-		perc);
+	printf("%zu packets transmitted, ", progconf.ping_num_xmit);
+	printf("%zu packets received, ", progconf.ping_num_recv);
+	printf("%d%% packet loss", perc);
+	printf("\n");
 
 	if (progconf.ping_num_recv > 0) {
 		double total = (double)progconf.ping_num_recv;
@@ -92,10 +93,13 @@ void ping(void *host)
 	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
 
 	ping_start(addr);
-	printf("PING %s (%s): %lu data bytes\n",
+	printf("PING %s (%s): %lu data bytes",
 		(char *)host,
 		progconf.host,
 		sizeof(((struct ping_pkt *)0)->payload));
+	if (progconf.args.verbose)
+		printf("TODO");
+	printf("\n");
 
 	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
