@@ -30,27 +30,33 @@ static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq) {
 	int optval = 1;
 	setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
 
-	//ft_putmem_fd(&pkt, sizeof(struct ping_pkt), 1);
 	if (sendto(sockfd, &pkt, sizeof(struct ping_pkt), 0, addr->ai_addr, addr->ai_addrlen) <= 0) {
 		perror("sendto() error");
 		exit(1);
 	}
+	++progconf.ping_num_xmit;
 }
 
-static void ping_finish(struct ping_stat *const stat, const char *const host, int seq)
+static void ping_start(struct addrinfo *addr)
 {
-	// FIXME this should be RECEIVED packages and not `seq`
-	double total = seq;
+	progconf.ping_num_xmit = 0;
+	progconf.ping_num_recv = 0;
+	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, progconf.host, INET_ADDRSTRLEN);
+}
+
+static void ping_finish(struct ping_stat *const stat)
+{
+	double total = (double)progconf.ping_num_recv;
 	double avg = stat->tsum / total;
 	double stddev = ping_sqrt(stat->tsumsq / total - avg * avg);
 
-	printf("--- %s ping statistics ---\n", host);
-	printf("%d packets transmitted, %d packets received, %d%% packet loss\n",
-		seq,
-		0,
-		0);
+	printf("--- %s ping statistics ---\n", progconf.host);
+	printf("%zu packets transmitted, %zu packets received, %zu%% packet loss\n",
+		progconf.ping_num_xmit,
+		progconf.ping_num_recv,
+		(progconf.ping_num_xmit - progconf.ping_num_recv) / progconf.ping_num_xmit * 100);
 
-	if (seq > 0) {
+	if (total > 0) {
 		printf("round-trip min/avg/max/stddev = %.3lf/%.3lf/%.3lf/%.3lf ms\n",
 			stat->tmin,
 			avg,
@@ -61,7 +67,6 @@ static void ping_finish(struct ping_stat *const stat, const char *const host, in
 
 void ping(void *host)
 {
-	static char ip[INET_ADDRSTRLEN] = {0};
 	uint16_t seq = 0;
 	struct addrinfo *addr;
 	int sockfd;
@@ -84,15 +89,15 @@ void ping(void *host)
 	tv_out.tv_usec = 0;
 	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv_out, sizeof tv_out);
 
-	inet_ntop(AF_INET, &((struct sockaddr_in *)addr->ai_addr)->sin_addr, ip, INET_ADDRSTRLEN),
+	ping_start(addr);
 	printf("PING %s (%s): %lu data bytes\n",
 		(char *)host,
-		ip,
+		progconf.host,
 		sizeof(((struct ping_pkt *)0)->payload));
 
 	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
-		pong(sockfd, &stat, ip);
+		pong(sockfd, &stat);
 		++seq;
 		if (!progconf.loop || seq >= progconf.args.count)
 			break;
@@ -102,5 +107,5 @@ void ping(void *host)
 	freeaddrinfo(addr);
 	close(sockfd);
 
-	ping_finish(&stat, host, seq);
+	ping_finish(&stat);
 }

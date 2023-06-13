@@ -10,7 +10,7 @@
 
 #include "ft_ping.h"
 
-void pong(const int sockfd, struct ping_stat *const stat, const char *const host)
+void pong(const int sockfd, struct ping_stat *const stat)
 {
 	ssize_t size;
 	char buffer[1024];
@@ -25,6 +25,7 @@ void pong(const int sockfd, struct ping_stat *const stat, const char *const host
 		// exit(1);
 		return;
 	}
+	++progconf.ping_num_recv;
 	
 	gettimeofday(&end, NULL);
 	double mtime = (double)(end.tv_sec - start.tv_sec) * 1000.0 + (double)(end.tv_usec - start.tv_usec) / 1000.0;
@@ -49,7 +50,7 @@ void pong(const int sockfd, struct ping_stat *const stat, const char *const host
 
 	printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3lf ms\n",
 		ntohs(ip_packet->tot_len) - ip_header_len,
-		host,
+		progconf.host,
 		ntohs(icmp_packet->un.echo.sequence),
 		ip_packet->ttl,
 		mtime);

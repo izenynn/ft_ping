@@ -38,6 +38,10 @@ struct ping_stat {
 struct progconf {
 	struct arguments args;
 	bool loop;
+
+	char host[INET_ADDRSTRLEN];
+	size_t ping_num_xmit;
+	size_t ping_num_recv;
 };
 
 extern const char *progname;
@@ -60,7 +64,7 @@ void set_icmphdr(void *pkt, uint16_t seq);
 void ping(void *host);
 
 // pong.c
-void pong(const int sockfd, struct ping_stat *const stat, const char *const host);
+void pong(const int sockfd, struct ping_stat *const stat);
 
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);
