@@ -1,6 +1,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sysexits.h>
+#include <limits.h>
 
 #include "miniarg.h"
 #include "libft/ft_nbr.h"
@@ -23,6 +24,7 @@ static bool isnum(const char *s)
 int parse_opt(int key, const char *arg, struct marg_state *state)
 {
 	struct arguments *args = state->input;
+	long count;
 	t_list *new;
 
 	switch (key) {
@@ -32,9 +34,11 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 	case 'c':
 		if (isnum(arg) == false)
 			error_exit(marg_err_exit_status, "invalid value ('%s')", arg);
-		args->count = (uint16_t)ft_atoi(arg);
-		//if (arg->count < 1)
-		//	error_exit(marg_err_exit_status, "invalid argument ('%s') out range: %s", arg);
+		count = ping_strtol(arg, NULL, 10);
+		if (((count == LONG_MIN || count == LONG_MAX) && errno == ERANGE)
+		    || (count < 1 || count > UINT16_MAX))
+			error_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT16_MAX);
+		args->count = (uint16_t)count;
 		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);

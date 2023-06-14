@@ -75,5 +75,6 @@ void sig_alarm(int sig);
 
 // utils.c
 double ping_sqrt(double n);
+long ping_strtol(const char *nptr, char **endptr, int base);
 
 #endif // FTPING_FTPING_H_
