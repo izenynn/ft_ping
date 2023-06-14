@@ -21,10 +21,11 @@ void pong(const int sockfd, struct ping_stat *const stat)
 	
 	size = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
 	if (size <= 0) {
-		// perror("recvfrom() error");
+		perror("recvfrom() error");
 		// exit(1);
 		return;
 	}
+	// FIXME should this be here or below the ICMP_ECHOREPLY check ?
 	++progconf.ping_num_recv;
 	
 	gettimeofday(&end, NULL);
