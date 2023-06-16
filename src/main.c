@@ -25,8 +25,23 @@ static char doc[] = "Send ICMP ECHO_REQUEST packets to network hosts.";
 static char args_doc[] = "HOST ...";
 
 static struct marg_option options[] = {
+	{MARG_GRP, NULL, NULL, 0, "Options controlling ICMP request types:"},
+
+	{MARG_GRP, NULL, NULL, 0, "Options valid for all request types:"},
+	{'c', "count", NULL, OPTION_ARG_REQUIRED, "stop after sending N packets"},
+	{'i', "interval", NULL, OPTION_ARG_REQUIRED, "wait N seconds between sending each packet"},
+	{'n', "numeric", NULL, 0, "do not resolve host addresses"},
+	{ARG_TTL, "ttl", NULL, OPTION_ARG_REQUIRED, "specify N as time-to-live"},
 	{'v', "verbose", NULL, 0, "verbose output"},
-	{'c', "count", NULL, OPTION_ARG | OPTION_ARG_REQUIRED, "stop after sending N packets"},
+	{'w', "timeout", NULL, OPTION_ARG_REQUIRED, "stop after N seconds"},
+	{'W', "linger", NULL, OPTION_ARG_REQUIRED, "number of seconds to wait for response"},
+
+	{MARG_GRP, NULL, NULL, 0, "Options valid for --echo requests:"},
+	{'f', "flood", NULL, 0, "flood ping"},
+	{'l', "preload", NULL, OPTION_ARG_REQUIRED, "send N packets as fast as possible before falling into normal made of behavior"},
+	{'p', "pattern", NULL, OPTION_ARG_REQUIRED, "fill ICMP packet with given pattern"},
+	{'s', "size", NULL, OPTION_ARG_REQUIRED, "send N data octets"},
+
 	{0}
 };
 

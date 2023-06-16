@@ -16,6 +16,11 @@
 #define PING_SLEEP_RATE 1000000
 #define RECV_TIMEOUT 1
 
+// Define keys for long options that do not have short counterparts
+enum {
+	ARG_TTL = 256
+};
+
 struct arguments {
 	t_list *hosts;
 	bool verbose;
