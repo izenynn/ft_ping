@@ -75,7 +75,6 @@ struct addrinfo *get_host_info(const char *const host, int family);
 
 // signal.c
 void sig_int(int sig);
-void sig_alarm(int sig);
 
 // utils.c
 double ping_sqrt(double n);

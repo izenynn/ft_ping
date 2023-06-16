@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	marg_parse(&marg, argc, argv, &progconf.args);
 
 	// Signals
-	if (signal(SIGINT, sig_int) == SIG_ERR || signal(SIGALRM, sig_alarm) == SIG_ERR) {
+	if (signal(SIGINT, sig_int) == SIG_ERR) {
 		log_exit(EX_OSERR, "%s", strerror(errno));
 	}
 
