@@ -8,7 +8,18 @@
 
 #include "ft_ping.h"
 
-void ping_log(const char *fmt, ...)
+void log_info(const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	fprintf(stdout, "%s: ", marg_program_name);
+	vfprintf(stdout, fmt, args);
+	fprintf(stdout, "\n");
+	va_end(args);
+}
+
+void log_verbose(const char *fmt, ...)
 {
 	va_list args;
 
@@ -21,7 +32,18 @@ void ping_log(const char *fmt, ...)
 	}
 }
 
-void ping_exit(const int err, const char *fmt, ...)
+void log_error(const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	fprintf(stderr, "%s: ", marg_program_name);
+	vfprintf(stderr, fmt, args);
+	fprintf(stderr, "\n");
+	va_end(args);
+}
+
+void log_exit(const int err, const char *fmt, ...)
 {
 	va_list args;
 
@@ -33,24 +55,13 @@ void ping_exit(const int err, const char *fmt, ...)
 	exit(err);
 }
 
-void ping_error(const char *fmt, ...)
+void log_perror(const char *s)
 {
-	va_list args;
-
-	va_start(args, fmt);
-	fprintf(stderr, "%s: ", marg_program_name);
-	vfprintf(stderr, fmt, args);
-	fprintf(stderr, "\n");
-	va_end(args);
+	log_error("%s: %s", s, strerror(errno));
 }
 
-void ping_perror(const char *s)
+void log_pexit(const int err, const char *s)
 {
-	ping_error("%s: %s", s, strerror(errno));
-}
-
-void ping_pexit(const int err, const char *s)
-{
-	ping_perror(s);
+	log_perror(s);
 	exit(err);
 }

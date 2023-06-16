@@ -33,12 +33,12 @@ static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 	int optval = 1;
 	err = setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(int));
 	if (err == -1)
-		ping_pexit(EXIT_FAILURE, "setsockopt");
+		log_pexit(EXIT_FAILURE, "setsockopt");
 
 	err = sendto(sockfd, &pkt, sizeof(struct ping_pkt), 0,
 		     addr->ai_addr, addr->ai_addrlen);
 	if (err <= 0)
-		ping_pexit(EXIT_FAILURE, "sendto");
+		log_pexit(EXIT_FAILURE, "sendto");
 
 	++progconf.ping_num_xmit;
 }
@@ -55,14 +55,14 @@ static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
 	*sockfd = socket((*addr)->ai_family, (*addr)->ai_socktype,
 			 (*addr)->ai_protocol);
 	if (*sockfd < 0)
-		ping_pexit(EXIT_FAILURE, "socket");
+		log_pexit(EXIT_FAILURE, "socket");
 
 	tv_out.tv_sec = RECV_TIMEOUT;
 	tv_out.tv_usec = 0;
 	err = setsockopt(*sockfd, SOL_SOCKET, SO_RCVTIMEO,
 			 (const char*)&tv_out, sizeof tv_out);
 	if (err == -1)
-		ping_pexit(EXIT_FAILURE, "setsockopt");
+		log_pexit(EXIT_FAILURE, "setsockopt");
 
 	progconf.ping_num_xmit = 0;
 	progconf.ping_num_recv = 0;

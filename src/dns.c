@@ -21,9 +21,9 @@ struct addrinfo *get_host_info(const char *const host, int family)
 	err = getaddrinfo(host, NULL, &hints, &res);
 	if (err != 0) {
 		if (err == EAI_SYSTEM)
-			ping_error("looking up %s: %s", host, strerror(errno));
+			log_error("looking up %s: %s", host, strerror(errno));
 		else
-			ping_error("looking up %s: %s", host, gai_strerror(err));
+			log_error("looking up %s: %s", host, gai_strerror(err));
 		return NULL;
 	}
 

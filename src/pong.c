@@ -23,11 +23,11 @@ void pong(const int sockfd, struct ping_stat *const stat)
 	size = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
 	if (size <= 0) {
 		if (errno == EINTR || errno == EAGAIN) {
-			ping_log("request timed out for icmp_seq=%d",
-				 progconf.ping_num_xmit - 1);
+			log_verbose("request timed out for icmp_seq=%d",
+				    progconf.ping_num_xmit - 1);
 			return;
 		} else {
-			ping_pexit(EXIT_FAILURE, "recvfrom");
+			log_pexit(EXIT_FAILURE, "recvfrom");
 		}
 	}
 	
@@ -35,7 +35,7 @@ void pong(const int sockfd, struct ping_stat *const stat)
 	double mtime = (double)(end.tv_sec - start.tv_sec) * 1000.0 + (double)(end.tv_usec - start.tv_usec) / 1000.0;
 	
 	if (size < (int)(sizeof(struct iphdr) + sizeof(struct icmphdr))) {
-		ping_exit(EXIT_FAILURE,
+		log_exit(EXIT_FAILURE,
 			  "incomplete echo reply package (size: '%z') icmp packet min size: %z",
 			  size, sizeof(struct iphdr) + sizeof(struct icmphdr));
 	}
@@ -46,7 +46,28 @@ void pong(const int sockfd, struct ping_stat *const stat)
 	struct icmphdr *icmp_packet = (struct icmphdr *)(buffer + ip_header_len);
 
 	if (icmp_packet->type != ICMP_ECHOREPLY) {
-		ping_error("received packet is not an ICMP echo reply");
+		printf("%d bytes from %s: ",
+			 ntohs(ip_packet->tot_len) - ip_header_len,
+			 progconf.host);
+		switch (icmp_packet->type) {
+		case ICMP_DEST_UNREACH:
+			printf("Destination Host Unreachable\n");
+			break;
+		case ICMP_SOURCE_QUENCH:
+			printf("Source Quench\n");
+			break;
+		case ICMP_REDIRECT:
+			printf("Redirect Message\n");
+			break;
+		case ICMP_TIME_EXCEEDED:
+			printf("Time Exceeded\n");
+			break;
+		case ICMP_PARAMETERPROB:
+			printf("Parameter Problem\n");
+			break;
+		default:
+			printf("Unknown ICMP type\n");
+		}
 		return;
 	}
 
@@ -58,15 +79,19 @@ void pong(const int sockfd, struct ping_stat *const stat)
 	stat->tsumsq += mtime * mtime;
 
 	if (progconf.ping_num_xmit - 1 == ntohs(icmp_packet->un.echo.sequence)) {
-		printf("%d bytes from %s: icmp_seq=%d ttl=%d time=%.3lf ms\n",
+		printf("%d bytes from %s: ",
 		       ntohs(ip_packet->tot_len) - ip_header_len,
-		       progconf.host,
+		       progconf.host);
+		printf("icmp_seq=%d ttl=%d time=%.3lf ms",
 		       ntohs(icmp_packet->un.echo.sequence),
 		       ip_packet->ttl,
 		       mtime);
-	} else {
-		ping_error("received icmp_seq=%d later",
-			   ntohs(icmp_packet->un.echo.sequence));
+	} else if (progconf.args.verbose) {
+		printf("%d bytes from %s: ",
+		       ntohs(ip_packet->tot_len) - ip_header_len,
+		       progconf.host);
+		printf("received icmp_seq=%d later\n",
+		       ntohs(icmp_packet->un.echo.sequence));
 	}
 
 	++progconf.ping_num_recv;
