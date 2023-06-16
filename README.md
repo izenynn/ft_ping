@@ -20,5 +20,8 @@ make
 
 ## Features
 
-- `-v`: verbose output.
-- `-h`: no idea what this does.
+- `-h`: help.
+- `-V`: version info.
+
+- `-v`: verbose mode (`inetutils-2` + added verbose messages).
+- `TODO`...

@@ -51,7 +51,8 @@ extern struct progconf progconf;
 // args.c
 int parse_opt(int key, const char *arg, struct marg_state *state);
 	
-// error.c
+// log.c
+void ping_log(const char *fmt, ...);
 void ping_error(const char *fmt, ...);
 void ping_exit(const int err, const char *fmt, ...);
 void ping_perror(const char *s);

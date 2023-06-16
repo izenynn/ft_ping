@@ -58,4 +58,3 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 
 	return 0;
 }
-

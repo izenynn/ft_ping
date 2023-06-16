@@ -18,9 +18,6 @@
 #include "ft_ping.h"
 
 // Arguments
-
-const char *progname = NULL;
-
 const char *marg_program_version = "ft_ping 0.0.1";
 const char *marg_program_bug_address = "<me@izenynn.com>";
 
@@ -49,7 +46,6 @@ struct progconf progconf = {
 int main(int argc, char *argv[])
 {
 	// Arguments
-	progname = argv[0];
 	marg_parse(&marg, argc, argv, &progconf.args);
 
 	// Signals
