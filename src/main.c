@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
 	// Signals
 	if (signal(SIGINT, sig_int) == SIG_ERR || signal(SIGALRM, sig_alarm) == SIG_ERR) {
-		error_exit(EX_OSERR, "%s", strerror(errno));
+		ping_exit(EX_OSERR, "%s", strerror(errno));
 	}
 
 	// Ping

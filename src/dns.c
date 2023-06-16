@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <sysexits.h>
+#include <unistd.h>
 
 #include "ft_ping.h"
 
@@ -21,9 +21,9 @@ struct addrinfo *get_host_info(const char *const host, int family)
 	err = getaddrinfo(host, NULL, &hints, &res);
 	if (err != 0) {
 		if (err == EAI_SYSTEM)
-			error("looking up %s: %s", host, strerror(errno));
+			ping_error("looking up %s: %s", host, strerror(errno));
 		else
-			error("looking up %s: %s", host, gai_strerror(err));
+			ping_error("looking up %s: %s", host, gai_strerror(err));
 		return NULL;
 	}
 

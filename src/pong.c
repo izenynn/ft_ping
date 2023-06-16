@@ -21,8 +21,7 @@ void pong(const int sockfd, struct ping_stat *const stat)
 	
 	size = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
 	if (size <= 0) {
-		perror("recvfrom() error");
-		// exit(1);
+		ping_perror("recvfrom");
 		return;
 	}
 	// FIXME should this be here or below the ICMP_ECHOREPLY check ?
