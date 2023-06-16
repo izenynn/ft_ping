@@ -5,7 +5,7 @@
 This project is about recoding the ping command.
 
 - Status: finished
-- Result: 100%
+- Result: 125%
 - Observations: taken `inetutils-2.0` implementation as reference.
 
 ## Compile and use
@@ -20,8 +20,8 @@ make
 
 ## Features
 
-- `-h`: help.
-- `-V`: version info.
+Run `./ft_ping -h` to see a full list of all options.
 
-- `-v`: verbose mode (`inetutils-2` + added verbose messages).
-- `TODO`...
+##
+[![forthebadge](https://forthebadge.com/images/badges/made-with-c.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/for-you.svg)](https://forthebadge.com)
