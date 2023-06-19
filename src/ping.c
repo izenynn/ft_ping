@@ -68,6 +68,9 @@ static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
 	progconf.ping_num_recv = 0;
 	inet_ntop(AF_INET, &((struct sockaddr_in *)(*addr)->ai_addr)->sin_addr,
 		  progconf.host, INET_ADDRSTRLEN);
+	// FIXME
+	reverse_dns(*addr);
+	printf("REVERSE DNS: %s\n", progconf.rhost);
 }
 
 static void ping_hdrmsg(char *host)

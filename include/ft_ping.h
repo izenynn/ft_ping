@@ -27,6 +27,7 @@ struct arguments {
 	bool verbose;
 	uint16_t count;
 	useconds_t interval;
+	bool numeric;
 };
 
 struct ping_pkt {
@@ -47,6 +48,7 @@ struct progconf {
 	bool loop;
 
 	char host[INET_ADDRSTRLEN];
+	char rhost[NI_MAXHOST];
 	size_t ping_num_xmit;
 	size_t ping_num_recv;
 };
@@ -79,6 +81,7 @@ void pong(const int sockfd, struct ping_stat *const stat);
 
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);
+int reverse_dns(struct addrinfo *addr);
 
 // signal.c
 void sig_int(int sig);

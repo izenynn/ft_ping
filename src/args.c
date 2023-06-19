@@ -28,9 +28,6 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 	t_list *new;
 
 	switch (key) {
-	case 'v':
-		args->verbose = true;
-		break;
 	case 'c':
 		if (isnum(arg) == false)
 			log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
@@ -48,6 +45,12 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		    || (tmp < 0 || tmp > UINT_MAX / 1000000))
 			log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT_MAX / 1000000);
 		args->interval = (useconds_t)(tmp * 1000000);
+		break;
+	case 'n':
+		args->numeric = true;
+		break;
+	case 'v':
+		args->verbose = true;
 		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);

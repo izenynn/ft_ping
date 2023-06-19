@@ -29,3 +29,18 @@ struct addrinfo *get_host_info(const char *const host, int family)
 
 	return res;
 }
+
+int reverse_dns(struct addrinfo *addr)
+{
+	int err;
+
+	err = getnameinfo(addr->ai_addr, sizeof(struct sockaddr_in), progconf.rhost, sizeof(progconf.rhost), NULL, 0, NI_NAMEREQD);
+	if (err != 0) {
+		if (err == EAI_SYSTEM)
+			log_error("looking up %s: %s", progconf.rhost, strerror(errno));
+		else
+			log_error("looking up %s: %s", progconf.rhost, gai_strerror(err));
+		return 1;
+	}
+	return 0;
+}

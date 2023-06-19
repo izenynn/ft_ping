@@ -54,7 +54,8 @@ struct progconf progconf = {
 		.hosts = NULL,
 		.verbose = false,
 		.count = UINT16_MAX,
-		.interval = PING_SLEEP_RATE
+		.interval = PING_SLEEP_RATE,
+		.numeric = false
 	},
 	.loop = true
 };
