@@ -24,7 +24,7 @@ static bool isnum(const char *s)
 int parse_opt(int key, const char *arg, struct marg_state *state)
 {
 	struct arguments *args = state->input;
-	long count;
+	long tmp;
 	t_list *new;
 
 	switch (key) {
@@ -34,11 +34,20 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 	case 'c':
 		if (isnum(arg) == false)
 			log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
-		count = ping_strtol(arg, NULL, 10);
-		if (((count == LONG_MIN || count == LONG_MAX) && errno == ERANGE)
-		    || (count < 1 || count > UINT16_MAX))
+		tmp = ping_strtol(arg, NULL, 10);
+		if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
+		    || (tmp < 1 || tmp > UINT16_MAX))
 			log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT16_MAX);
-		args->count = (uint16_t)count;
+		args->count = (uint16_t)tmp;
+		break;
+	case 'i':
+		if (isnum(arg) == false)
+			log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
+		tmp = ping_strtol(arg, NULL, 10);
+		if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
+		    || (tmp < 0 || tmp > UINT_MAX / 1000000))
+			log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT_MAX / 1000000);
+		args->interval = (useconds_t)(tmp * 1000000);
 		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);

@@ -74,7 +74,7 @@ static void handle_echoreply(struct ping_stat *const stat,
 
 	if (progconf.ping_num_xmit - 1 == ntohs(icmphdr->un.echo.sequence)) {
 		print_info();
-		printf("icmp_seq=%d ttl=%d time=%.3lf ms",
+		printf("icmp_seq=%d ttl=%d time=%.3lf ms\n",
 		       ntohs(icmphdr->un.echo.sequence),
 		       iphdr->ttl,
 		       time);

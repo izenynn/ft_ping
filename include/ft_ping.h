@@ -8,6 +8,7 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #include "miniarg.h"
 #include "libft/ft_lst.h"
@@ -25,6 +26,7 @@ struct arguments {
 	t_list *hosts;
 	bool verbose;
 	uint16_t count;
+	useconds_t interval;
 };
 
 struct ping_pkt {

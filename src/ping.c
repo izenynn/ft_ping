@@ -129,7 +129,7 @@ void ping(void *host)
 		++seq;
 		if (!progconf.loop || seq >= progconf.args.count)
 			break;
-		usleep(PING_SLEEP_RATE);
+		usleep(progconf.args.interval);
 	}
 	ping_statmsg(&stat);
 	
