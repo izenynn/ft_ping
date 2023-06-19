@@ -15,9 +15,12 @@ static int pkt_size = 0;
 
 static void print_info(void)
 {
-	printf("%d bytes from %s: ",
-	       pkt_size,
-	       progconf.host);
+	printf("%d bytes from ", pkt_size);
+	if (progconf.args.numeric) {
+		printf("%s: ", progconf.host);
+	} else {
+		printf("%s (%s): ", progconf.rhost, progconf.host);
+	}
 }
 
 static void parse_pkt(char *buffer, ssize_t size,
