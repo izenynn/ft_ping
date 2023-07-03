@@ -53,10 +53,11 @@ static struct marg marg = {options, parse_opt, args_doc, doc};
 struct progconf progconf = {
 	.args = {
 		.hosts = NULL,
-		.verbose = false,
 		.count = UINT16_MAX,
 		.interval = PING_SLEEP_RATE,
-		.numeric = false
+		.numeric = false,
+		.ttl = PING_TTL,
+		.verbose = false
 	},
 	.loop = true
 };

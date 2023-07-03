@@ -45,19 +45,19 @@ static void handle_other(struct icmphdr *icmphdr)
 	print_info();
 	switch (icmphdr->type) {
 	case ICMP_DEST_UNREACH:
-		printf("Destination Host Unreachable\n");
+		printf("Destination host unreachable\n");
 		break;
 	case ICMP_SOURCE_QUENCH:
-		printf("Source Quench\n");
+		printf("Source quench\n");
 		break;
 	case ICMP_REDIRECT:
-		printf("Redirect Message\n");
+		printf("Redirect message\n");
 		break;
 	case ICMP_TIME_EXCEEDED:
-		printf("Time Exceeded\n");
+		printf("Time to live exceeded\n");
 		break;
 	case ICMP_PARAMETERPROB:
-		printf("Parameter Problem\n");
+		printf("Parameter problem\n");
 		break;
 	default:
 		printf("Unknown ICMP type\n");

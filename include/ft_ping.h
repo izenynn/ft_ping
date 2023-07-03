@@ -15,6 +15,8 @@
 
 #define PING_PKT_SIZE 84
 #define PING_SLEEP_RATE 1000000
+#define PING_TTL 64
+
 #define RECV_TIMEOUT 1
 
 // Define keys for long options that do not have short counterparts
@@ -24,10 +26,11 @@ enum {
 
 struct arguments {
 	t_list *hosts;
-	bool verbose;
 	uint16_t count;
 	useconds_t interval;
 	bool numeric;
+	uint8_t ttl;
+	bool verbose;
 };
 
 struct ping_pkt {

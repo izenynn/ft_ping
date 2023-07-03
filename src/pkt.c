@@ -34,7 +34,7 @@ void set_iphdr(void *pkt, in_addr_t daddr)
 	hdr->tot_len = htons(sizeof(struct ping_pkt));
 	hdr->id = htons((uint16_t)getpid());
 	hdr->frag_off = 0;
-	hdr->ttl = 64;
+	hdr->ttl = progconf.args.ttl;
 	hdr->protocol = IPPROTO_ICMP;
 	hdr->saddr = INADDR_ANY;
 	hdr->daddr = daddr;

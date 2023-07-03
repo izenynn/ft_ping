@@ -21,6 +21,19 @@ static bool isnum(const char *s)
 	return true;
 }
 
+static long handle_long(const char *arg, long min, long max)
+{
+	long tmp;
+
+	if (isnum(arg) == false)
+		log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
+	tmp = ping_strtol(arg, NULL, 10);
+	if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
+	    || (tmp < min || tmp > max))
+		log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT16_MAX);
+	return tmp;
+}
+
 int parse_opt(int key, const char *arg, struct marg_state *state)
 {
 	struct arguments *args = state->input;
@@ -29,25 +42,17 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 
 	switch (key) {
 	case 'c':
-		if (isnum(arg) == false)
-			log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
-		tmp = ping_strtol(arg, NULL, 10);
-		if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
-		    || (tmp < 1 || tmp > UINT16_MAX))
-			log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT16_MAX);
-		args->count = (uint16_t)tmp;
+		args->count = (uint16_t)handle_long(arg, 1, UINT16_MAX);
 		break;
 	case 'i':
-		if (isnum(arg) == false)
-			log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
-		tmp = ping_strtol(arg, NULL, 10);
-		if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
-		    || (tmp < 0 || tmp > UINT_MAX / 1000000))
-			log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT_MAX / 1000000);
+		tmp = handle_long(arg, 0, UINT16_MAX / 1000000);
 		args->interval = (useconds_t)(tmp * 1000000);
 		break;
 	case 'n':
 		args->numeric = true;
+		break;
+	case ARG_TTL:
+		args->ttl = (uint8_t)handle_long(arg, 1, UINT8_MAX);
 		break;
 	case 'v':
 		args->verbose = true;
