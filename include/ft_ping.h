@@ -14,7 +14,7 @@
 #include "libft/ft_lst.h"
 
 #define PING_PKT_SIZE 84
-#define PING_SLEEP_RATE 1000000
+#define PING_INTERVAL 1000000
 #define PING_TTL 64
 
 #define RECV_TIMEOUT 1
