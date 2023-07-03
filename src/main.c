@@ -18,6 +18,7 @@
 #include "ft_ping.h"
 
 // Arguments
+
 const char *marg_program_version = "ft_ping 0.0.1";
 const char *marg_program_bug_address = "<me@izenynn.com>";
 
