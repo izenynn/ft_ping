@@ -31,6 +31,7 @@ struct arguments {
 	bool numeric;
 	uint8_t ttl;
 	bool verbose;
+	time_t timeout;
 };
 
 struct ping_pkt {
@@ -48,6 +49,7 @@ struct ping_stat {
 
 struct progconf {
 	struct arguments args;
+	struct timeval start;
 	bool loop;
 
 	char host[INET_ADDRSTRLEN];

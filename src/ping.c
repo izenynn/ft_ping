@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sysexits.h>
 #include <string.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -111,6 +112,23 @@ static void ping_statmsg(struct ping_stat *const stat)
 	}
 }
 
+int ping_sleep(void)
+{
+	struct timeval time;
+
+	usleep(progconf.args.interval);
+
+	if (gettimeofday(&time, NULL))
+		log_pexit(EX_OSERR, "gettimeofday");
+
+	if (progconf.args.timeout != 0
+	    && time.tv_sec - progconf.start.tv_sec >= progconf.args.timeout) {
+		return 1;
+	}
+
+	return 0;
+}
+
 void ping(void *host)
 {
 	uint16_t seq = 0;
@@ -131,10 +149,10 @@ void ping(void *host)
 		++seq;
 		if (!progconf.loop || seq >= progconf.args.count)
 			break;
-		usleep(progconf.args.interval);
+		if (ping_sleep())
+			break;
 	}
 	ping_statmsg(&stat);
-	
 	freeaddrinfo(addr);
 	close(sockfd);
 }

@@ -45,7 +45,7 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		args->count = (uint16_t)handle_long(arg, 1, UINT16_MAX);
 		break;
 	case 'i':
-		tmp = handle_long(arg, 0, UINT16_MAX / 1000000);
+		tmp = handle_long(arg, 0, UINT_MAX / 1000000);
 		args->interval = (useconds_t)(tmp * 1000000);
 		break;
 	case 'n':
@@ -56,6 +56,9 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		break;
 	case 'v':
 		args->verbose = true;
+		break;
+	case 'w':
+		args->timeout = (time_t)handle_long(arg, 0, LONG_MAX);
 		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);

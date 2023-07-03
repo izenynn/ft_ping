@@ -57,8 +57,10 @@ struct progconf progconf = {
 		.interval = PING_SLEEP_RATE,
 		.numeric = false,
 		.ttl = PING_TTL,
-		.verbose = false
+		.verbose = false,
+		.timeout = 0
 	},
+	.start = { .tv_sec = 0, .tv_usec = 0 },
 	.loop = true
 };
 
@@ -67,10 +69,13 @@ int main(int argc, char *argv[])
 	// Arguments
 	marg_parse(&marg, argc, argv, &progconf.args);
 
+	// Init
+	if (gettimeofday(&progconf.start, NULL))
+		log_pexit(EX_OSERR, "gettimeofday");
+
 	// Signals
-	if (signal(SIGINT, sig_int) == SIG_ERR) {
-		log_exit(EX_OSERR, "%s", strerror(errno));
-	}
+	if (signal(SIGINT, sig_int) == SIG_ERR)
+		log_pexit(EX_OSERR, "signal");
 
 	// Ping
 	ft_lstiter(progconf.args.hosts, ping);
