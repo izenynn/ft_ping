@@ -58,12 +58,14 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		args->verbose = true;
 		break;
 	case 'w':
-		args->timeout = (time_t)handle_long(arg, 0, LONG_MAX);
+		args->timeout = (time_t)handle_long(arg, 1, LONG_MAX);
+		break;
+	case 'W':
 		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);
 		if (new == NULL) {
-			log_exit(EX_OSERR, "%s", strerror(errno));
+			log_pexit(EX_OSERR, "error");
 		}
 		ft_lstadd_back(&args->hosts, new);
 		break;
