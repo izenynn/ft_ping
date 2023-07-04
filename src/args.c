@@ -30,7 +30,7 @@ static long handle_long(const char *arg, long min, long max)
 	tmp = ping_strtol(arg, NULL, 10);
 	if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
 	    || (tmp < min || tmp > max))
-		log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, 0, UINT16_MAX);
+		log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %d - %d", arg, min, max);
 	return tmp;
 }
 
