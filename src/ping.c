@@ -17,12 +17,12 @@
 
 #include "ft_ping.h"
 
-static void ping_init_linger(int *sockfd)
+static void ping_set_linger(int *sockfd)
 {
 	struct timeval tv_out;
 	int err;
 
-	if (progconf.args.flood) {
+	if (progconf.args.flood || progconf.args.preload != 0) {
 		tv_out.tv_sec = 0;
 		tv_out.tv_usec = PING_FLOOD_LINGER_USEC;
 	} else {
@@ -50,7 +50,7 @@ static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
 	if (*sockfd < 0)
 		log_pexit(EXIT_FAILURE, "socket");
 
-	ping_init_linger(sockfd);
+	ping_set_linger(sockfd);
 
 	progconf.ping_num_xmit = 0;
 	progconf.ping_num_recv = 0;
@@ -131,8 +131,6 @@ int ping_sleep(void)
 	struct timeval time;
 
 	if (progconf.args.flood || progconf.args.preload > 0) {
-		if (progconf.args.preload > 0)
-			--progconf.args.preload;
 		usleep(PING_FLOOD_INTERVAL);
 	} else {
 		usleep(progconf.args.interval);
@@ -170,6 +168,11 @@ void ping(void *host)
 		if (timed_out == 0 || progconf.args.is_interval) {
 			if (ping_sleep())
 				break;
+		}
+		if (progconf.args.preload > 0) {
+			--progconf.args.preload;
+			if (progconf.args.preload == 0)
+				ping_set_linger(&sockfd);
 		}
 	}
 	ping_statmsg(&stat);
