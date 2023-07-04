@@ -88,12 +88,24 @@ LDLIBS = $(LFT) $(LMARG)
 #                                    RULES                                     #
 # **************************************************************************** #
 
-SILENT := all
 PHONY := all
-all: $(NAME)
+SILENT := all
+all:: $(NAME)
+all:: suid
 
 $(NAME): $(OBJ) $(LDLIBS)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+
+PHONY += suid
+SILENT += suid
+suid:
+	if [ -z "`find . -name \"$(NAME)\" -perm -4000`" ]; then \
+		if [ "$(shell id -u)" -ne 0 ]; then \
+			echo "Error: could not set suid perms, run 'make $@' as root" >&2; \
+		else \
+			chmod "u+s" "./$(NAME)"; \
+		fi \
+	fi
 
 PHONY += sanitize
 ifeq ($(UNAME_S),Linux)
