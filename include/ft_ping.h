@@ -13,7 +13,7 @@
 #include "miniarg.h"
 #include "libft/ft_lst.h"
 
-#define PING_PKT_SIZE 84
+#define PKT_DATA_SIZE 56
 
 #define PING_TTL 64
 #define PING_INTERVAL_USEC 1000000 // 1 second
@@ -51,7 +51,7 @@ struct arguments {
 struct ping_pkt {
 	struct iphdr iphdr;
 	struct icmphdr icmphdr;
-	char payload[PING_PKT_SIZE - sizeof(struct icmphdr) - sizeof(struct iphdr)];
+	char payload[PKT_DATA_SIZE];
 };
 
 struct ping_stat {
