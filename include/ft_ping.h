@@ -14,10 +14,10 @@
 #include "libft/ft_lst.h"
 
 #define PING_PKT_SIZE 84
-#define PING_INTERVAL 1000000
-#define PING_TTL 64
 
-#define RECV_TIMEOUT 1
+#define PING_TTL 64
+#define PING_INTERVAL 1000000 // 1 second
+#define PING_LINGER 1
 
 // Define keys for long options that do not have short counterparts
 enum {
@@ -27,11 +27,13 @@ enum {
 struct arguments {
 	t_list *hosts;
 	uint16_t count;
+	bool is_interval;
 	useconds_t interval;
 	bool numeric;
 	uint8_t ttl;
 	bool verbose;
 	time_t timeout;
+	time_t linger;
 };
 
 struct ping_pkt {
@@ -82,7 +84,7 @@ void set_icmphdr(void *pkt, uint16_t seq);
 void ping(void *host);
 
 // pong.c
-void pong(const int sockfd, struct ping_stat *const stat);
+int pong(const int sockfd, struct ping_stat *const stat);
 
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);

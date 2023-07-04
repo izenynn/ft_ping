@@ -17,6 +17,57 @@
 
 #include "ft_ping.h"
 
+static void ping_init_linger(int *sockfd)
+{
+	struct timeval tv_out;
+	int err;
+
+	if (progconf.args.linger == 0)
+		tv_out.tv_sec = PING_LINGER;
+	else
+		tv_out.tv_sec = progconf.args.linger;
+	tv_out.tv_usec = 0;
+	err = setsockopt(*sockfd, SOL_SOCKET, SO_RCVTIMEO,
+			 (const char*)&tv_out, sizeof tv_out);
+
+	if (err == -1)
+		log_pexit(EXIT_FAILURE, "setsockopt");
+}
+
+static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
+{
+	*addr = get_host_info(host, AF_INET);
+	if (*addr == NULL)
+		exit(EXIT_FAILURE);
+
+	*sockfd = socket((*addr)->ai_family, (*addr)->ai_socktype,
+			 (*addr)->ai_protocol);
+	if (*sockfd < 0)
+		log_pexit(EXIT_FAILURE, "socket");
+
+	ping_init_linger(sockfd);
+
+	progconf.ping_num_xmit = 0;
+	progconf.ping_num_recv = 0;
+	inet_ntop(AF_INET, &((struct sockaddr_in *)(*addr)->ai_addr)->sin_addr,
+		  progconf.host, INET_ADDRSTRLEN);
+	if (reverse_dns(*addr))
+		progconf.args.numeric = true; // If reverse fails only print ip
+}
+
+static void ping_hdrmsg(char *host)
+{
+	printf("PING %s (%s): %lu data bytes",
+		(char *)host,
+		progconf.host,
+		sizeof(((struct ping_pkt *)0)->payload));
+	if (progconf.args.verbose) {
+		pid_t pid = getpid();
+		printf(", id 0x%04x = %d", pid, pid);
+	}
+	printf("\n");
+}
+
 static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 {
 	struct ping_pkt pkt;
@@ -42,48 +93,6 @@ static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 		log_pexit(EXIT_FAILURE, "sendto");
 
 	++progconf.ping_num_xmit;
-}
-
-static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
-{
-	struct timeval tv_out;
-	int err;
-
-	*addr = get_host_info(host, AF_INET);
-	if (*addr == NULL)
-		exit(EXIT_FAILURE);
-
-	*sockfd = socket((*addr)->ai_family, (*addr)->ai_socktype,
-			 (*addr)->ai_protocol);
-	if (*sockfd < 0)
-		log_pexit(EXIT_FAILURE, "socket");
-
-	tv_out.tv_sec = RECV_TIMEOUT;
-	tv_out.tv_usec = 0;
-	err = setsockopt(*sockfd, SOL_SOCKET, SO_RCVTIMEO,
-			 (const char*)&tv_out, sizeof tv_out);
-	if (err == -1)
-		log_pexit(EXIT_FAILURE, "setsockopt");
-
-	progconf.ping_num_xmit = 0;
-	progconf.ping_num_recv = 0;
-	inet_ntop(AF_INET, &((struct sockaddr_in *)(*addr)->ai_addr)->sin_addr,
-		  progconf.host, INET_ADDRSTRLEN);
-	if (reverse_dns(*addr))
-		progconf.args.numeric = true; // If reverse fails only print ip
-}
-
-static void ping_hdrmsg(char *host)
-{
-	printf("PING %s (%s): %lu data bytes",
-		(char *)host,
-		progconf.host,
-		sizeof(((struct ping_pkt *)0)->payload));
-	if (progconf.args.verbose) {
-		pid_t pid = getpid();
-		printf(", id 0x%04x = %d", pid, pid);
-	}
-	printf("\n");
 }
 
 static void ping_statmsg(struct ping_stat *const stat)
@@ -132,25 +141,26 @@ int ping_sleep(void)
 void ping(void *host)
 {
 	uint16_t seq = 0;
-	struct addrinfo *addr;
 	int sockfd;
+	struct addrinfo *addr;
 	struct ping_stat stat = {
-		.tmin = DBL_MAX,
-		.tmax = DBL_MIN,
-		.tsum = 0,
-		.tsumsq = 0
+		.tmin = DBL_MAX, .tmax = DBL_MIN,
+		.tsum = 0, .tsumsq = 0
 	};
+	int timed_out;
 
 	ping_init(host, &addr, &sockfd);
 	ping_hdrmsg(host);
 	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
-		pong(sockfd, &stat);
+		timed_out = pong(sockfd, &stat);
 		++seq;
 		if (!progconf.loop || seq >= progconf.args.count)
 			break;
-		if (ping_sleep())
-			break;
+		if (timed_out == 0 || progconf.args.is_interval) {
+			if (ping_sleep())
+				break;
+		}
 	}
 	ping_statmsg(&stat);
 	freeaddrinfo(addr);

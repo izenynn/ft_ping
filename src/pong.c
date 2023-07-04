@@ -90,7 +90,7 @@ static void handle_echoreply(struct ping_stat *const stat,
 	++progconf.ping_num_recv;
 }
 
-void pong(const int sockfd, struct ping_stat *const stat)
+int pong(const int sockfd, struct ping_stat *const stat)
 {
 	ssize_t size;
 	char buffer[1024];
@@ -106,7 +106,7 @@ void pong(const int sockfd, struct ping_stat *const stat)
 		if (errno == EINTR || errno == EAGAIN) {
 			log_verbose("request timed out for icmp_seq=%d",
 				    progconf.ping_num_xmit - 1);
-			return;
+			return 1;
 		} else {
 			log_pexit(EXIT_FAILURE, "recvfrom");
 		}
@@ -121,4 +121,6 @@ void pong(const int sockfd, struct ping_stat *const stat)
 		handle_echoreply(stat, iphdr, icmphdr, time);
 	else
 		handle_other(icmphdr);
+
+	return 0;
 }

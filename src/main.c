@@ -54,11 +54,13 @@ struct progconf progconf = {
 	.args = {
 		.hosts = NULL,
 		.count = UINT16_MAX,
+		.is_interval = false,
 		.interval = PING_INTERVAL,
 		.numeric = false,
 		.ttl = PING_TTL,
 		.verbose = false,
-		.timeout = 0
+		.timeout = 0,
+		.linger = 0
 	},
 	.start = { .tv_sec = 0, .tv_usec = 0 },
 	.loop = true
