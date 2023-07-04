@@ -126,9 +126,12 @@ static void ping_statmsg(struct ping_stat *const stat)
 	}
 }
 
-int ping_sleep(void)
+int ping_sleep(enum pong_status status)
 {
 	struct timeval time;
+
+	if (status == PONG_TIMEOUT && !progconf.args.is_interval)
+		return 0;
 
 	if (progconf.args.flood || progconf.args.preload > 0) {
 		usleep(PING_FLOOD_INTERVAL);
@@ -155,20 +158,19 @@ void ping(void *host)
 		.tmin = DBL_MAX, .tmax = DBL_MIN,
 		.tsum = 0, .tsumsq = 0
 	};
-	int timed_out;
+	enum pong_status status;
 
 	ping_init(host, &addr, &sockfd);
 	ping_hdrmsg(host);
 	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
-		timed_out = pong(sockfd, &stat);
+		for (status = PONG_RETRY; status == PONG_RETRY;)
+			status = pong(sockfd, &stat);
 		++seq;
 		if (!progconf.loop || seq >= progconf.args.count)
 			break;
-		if (timed_out == 0 || progconf.args.is_interval) {
-			if (ping_sleep())
-				break;
-		}
+		if (ping_sleep(status))
+			break;
 		if (progconf.args.preload > 0) {
 			--progconf.args.preload;
 			if (progconf.args.preload == 0)

@@ -27,6 +27,13 @@ enum {
 	ARG_TTL = 256
 };
 
+enum pong_status {
+	PONG_SUCCESS = 0,
+	PONG_ERROR,
+	PONG_TIMEOUT,
+	PONG_RETRY
+};
+
 struct arguments {
 	t_list *hosts;
 	uint16_t count;
@@ -89,7 +96,7 @@ void set_icmphdr(void *pkt, uint16_t seq);
 void ping(void *host);
 
 // pong.c
-int pong(const int sockfd, struct ping_stat *const stat);
+enum pong_status pong(const int sockfd, struct ping_stat *const stat);
 
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);

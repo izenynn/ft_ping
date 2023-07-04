@@ -93,7 +93,7 @@ static void handle_echoreply(struct ping_stat *const stat,
 	}
 }
 
-int pong(const int sockfd, struct ping_stat *const stat)
+enum pong_status pong(const int sockfd, struct ping_stat *const stat)
 {
 	ssize_t size;
 	char buffer[1024];
@@ -114,7 +114,7 @@ int pong(const int sockfd, struct ping_stat *const stat)
 				log_verbose("request timed out for icmp_seq=%d",
 					    progconf.ping_num_xmit - 1);
 			}
-			return 1;
+			return PONG_TIMEOUT;
 		} else {
 			log_pexit(EXIT_FAILURE, "recvfrom");
 		}
@@ -124,11 +124,14 @@ int pong(const int sockfd, struct ping_stat *const stat)
 	double time = (double)(end.tv_sec - start.tv_sec) * 1000.0
 		      + (double)(end.tv_usec - start.tv_usec) / 1000.0;
 	
-	parse_pkt(buffer, size, &iphdr, &icmphdr);	
-	if (icmphdr->type == ICMP_ECHOREPLY)
+	parse_pkt(buffer, size, &iphdr, &icmphdr);
+
+	if (icmphdr->type == ICMP_ECHO)
+		return PONG_RETRY;
+	else if (icmphdr->type == ICMP_ECHOREPLY)
 		handle_echoreply(stat, iphdr, icmphdr, time);
 	else
 		handle_other(icmphdr);
 
-	return 0;
+	return PONG_SUCCESS;
 }
