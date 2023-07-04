@@ -16,8 +16,11 @@
 #define PING_PKT_SIZE 84
 
 #define PING_TTL 64
-#define PING_INTERVAL 1000000 // 1 second
-#define PING_LINGER 1
+#define PING_INTERVAL_USEC 1000000 // 1 second
+#define PING_LINGER_SEC 1
+
+#define PING_FLOOD_INTERVAL 10000 // 0.01 second
+#define PING_FLOOD_LINGER_USEC 10000
 
 // Define keys for long options that do not have short counterparts
 enum {

@@ -22,11 +22,16 @@ static void ping_init_linger(int *sockfd)
 	struct timeval tv_out;
 	int err;
 
-	if (progconf.args.linger == 0)
-		tv_out.tv_sec = PING_LINGER;
-	else
-		tv_out.tv_sec = progconf.args.linger;
-	tv_out.tv_usec = 0;
+	if (progconf.args.flood) {
+		tv_out.tv_sec = 0;
+		tv_out.tv_usec = PING_FLOOD_LINGER_USEC;
+	} else {
+		if (progconf.args.linger == 0)
+			tv_out.tv_sec = PING_LINGER_SEC;
+		else
+			tv_out.tv_sec = progconf.args.linger;
+		tv_out.tv_usec = 0;
+	}
 	err = setsockopt(*sockfd, SOL_SOCKET, SO_RCVTIMEO,
 			 (const char*)&tv_out, sizeof tv_out);
 
@@ -125,14 +130,19 @@ int ping_sleep(void)
 {
 	struct timeval time;
 
-	usleep(progconf.args.interval);
+	if (progconf.args.flood || progconf.args.preload > 0) {
+		if (progconf.args.preload > 0)
+			--progconf.args.preload;
+		usleep(PING_FLOOD_INTERVAL);
+	} else {
+		usleep(progconf.args.interval);
+	}
 
-	if (gettimeofday(&time, NULL))
-		log_pexit(EX_OSERR, "gettimeofday");
-
-	if (progconf.args.timeout != 0
-	    && time.tv_sec - progconf.start.tv_sec >= progconf.args.timeout) {
-		return 1;
+	if (progconf.args.timeout != 0) {
+		if (gettimeofday(&time, NULL))
+			log_pexit(EX_OSERR, "gettimeofday");
+		if (time.tv_sec - progconf.start.tv_sec >= progconf.args.timeout)
+			return 1;
 	}
 
 	return 0;
