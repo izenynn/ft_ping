@@ -1,3 +1,5 @@
+#include <unistd.h>
+#include <sys/types.h>
 #include <string.h>
 #include <errno.h>
 #include <sysexits.h>
@@ -63,6 +65,14 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		break;
 	case 'W':
 		args->linger = (time_t)handle_long(arg, 1, LONG_MAX);
+		break;
+	case 'f':
+		if (getuid() != 0)
+			log_exit(EX_USAGE, "cannot flood (root only)");
+		args->flood = true;
+		break;
+	case 'l':
+		args->preload = (uint16_t)handle_long(arg, 0, UINT16_MAX);
 		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);

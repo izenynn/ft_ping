@@ -60,7 +60,9 @@ struct progconf progconf = {
 		.ttl = PING_TTL,
 		.verbose = false,
 		.timeout = 0,
-		.linger = 0
+		.linger = 0,
+		.flood = false,
+		.preload = 0
 	},
 	.start = { .tv_sec = 0, .tv_usec = 0 },
 	.loop = true

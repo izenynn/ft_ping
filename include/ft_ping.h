@@ -34,6 +34,8 @@ struct arguments {
 	bool verbose;
 	time_t timeout;
 	time_t linger;
+	bool flood;
+	uint16_t preload;
 };
 
 struct ping_pkt {
