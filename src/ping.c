@@ -62,10 +62,10 @@ static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
 
 static void ping_hdrmsg(char *host)
 {
-	printf("PING %s (%s): %lu data bytes",
+	printf("PING %s (%s): %hu data bytes",
 		(char *)host,
 		progconf.host,
-		sizeof(((struct ping_pkt *)0)->payload));
+		progconf.args.size);
 	if (progconf.args.verbose) {
 		pid_t pid = getpid();
 		printf(", id 0x%04x = %d", pid, pid);
@@ -75,12 +75,12 @@ static void ping_hdrmsg(char *host)
 
 static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 {
-	struct ping_pkt pkt;
 	ssize_t err;
 
-	set_iphdr(&pkt, ((struct sockaddr_in *)addr->ai_addr)->sin_addr.s_addr);
-	set_payload(&pkt);
-	set_icmphdr(&pkt, seq);
+	ft_bzero(progconf.pkt, sizeof(struct ping_pkt) + progconf.args.size);
+	set_iphdr(progconf.pkt, ((struct sockaddr_in *)addr->ai_addr)->sin_addr.s_addr);
+	set_payload(progconf.pkt);
+	set_icmphdr(progconf.pkt, seq);
 
 	/*
 	 * IP_HDRINCL must be set on the socket so that
@@ -92,8 +92,9 @@ static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 	if (err == -1)
 		log_pexit(EXIT_FAILURE, "setsockopt");
 
-	err = sendto(sockfd, &pkt, sizeof(struct ping_pkt), 0,
-		     addr->ai_addr, addr->ai_addrlen);
+	err = sendto(sockfd,
+		     progconf.pkt, sizeof(struct ping_pkt) + progconf.args.size,
+		     0, addr->ai_addr, addr->ai_addrlen);
 	if (err <= 0)
 		log_pexit(EXIT_FAILURE, "sendto");
 

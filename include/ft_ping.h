@@ -46,12 +46,14 @@ struct arguments {
 	time_t linger;
 	bool flood;
 	uint16_t preload;
+	// TODO pattern
+	uint16_t size;
 };
 
 struct ping_pkt {
 	struct iphdr iphdr;
 	struct icmphdr icmphdr;
-	char payload[PKT_DATA_SIZE];
+	char payload[];
 };
 
 struct ping_stat {
@@ -70,6 +72,8 @@ struct progconf {
 	char rhost[NI_MAXHOST];
 	size_t ping_num_xmit;
 	size_t ping_num_recv;
+
+	struct ping_pkt *pkt;
 };
 
 extern const char *progname;

@@ -31,7 +31,7 @@ void set_iphdr(void *pkt, in_addr_t daddr)
 	hdr->ihl = 5; // Size in 32-bit words
 	hdr->version = 4;
 	hdr->tos = 0;
-	hdr->tot_len = htons(sizeof(struct ping_pkt));
+	hdr->tot_len = htons(sizeof(struct ping_pkt) + progconf.args.size);
 	hdr->id = htons((uint16_t)getpid());
 	hdr->frag_off = 0;
 	hdr->ttl = progconf.args.ttl;
@@ -45,7 +45,7 @@ void set_payload(void *pkt)
 {
 	char *payload = ((struct ping_pkt *)pkt)->payload;
 
-	ft_memset(payload, 0, sizeof(((struct ping_pkt *)0)->payload));
+	ft_memset(payload, 0, progconf.args.size);
 }
 
 void set_icmphdr(void *pkt, uint16_t seq)
@@ -58,5 +58,5 @@ void set_icmphdr(void *pkt, uint16_t seq)
 	hdr->code = 0;
 	hdr->un.echo.id = htons((uint16_t)getpid());
 	hdr->un.echo.sequence = htons(seq);
-	hdr->checksum = checksum(hdr, sizeof(struct icmphdr) + sizeof(((struct ping_pkt *)0)->payload));
+	hdr->checksum = checksum(hdr, sizeof(struct icmphdr) + progconf.args.size);
 }

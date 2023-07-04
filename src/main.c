@@ -62,7 +62,8 @@ struct progconf progconf = {
 		.timeout = 0,
 		.linger = 0,
 		.flood = false,
-		.preload = 0
+		.preload = 0,
+		.size = PKT_DATA_SIZE
 	},
 	.start = { .tv_sec = 0, .tv_usec = 0 },
 	.loop = true
@@ -76,8 +77,9 @@ int main(int argc, char *argv[])
 	// Init
 	if (gettimeofday(&progconf.start, NULL))
 		log_pexit(EX_OSERR, "gettimeofday");
-
-	// Signals
+	progconf.pkt = malloc(sizeof(struct ping_pkt) + progconf.args.size);
+	if (progconf.pkt == NULL)
+		log_pexit(EX_OSERR, "malloc");
 	if (signal(SIGINT, sig_int) == SIG_ERR)
 		log_pexit(EX_OSERR, "signal");
 

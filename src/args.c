@@ -74,6 +74,11 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 	case 'l':
 		args->preload = (uint16_t)handle_long(arg, 0, UINT16_MAX);
 		break;
+	case 'p':
+		break;
+	case 's':
+		args->size = (uint16_t)handle_long(arg, 0, UINT16_MAX);
+		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);
 		if (new == NULL) {
