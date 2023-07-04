@@ -23,13 +23,13 @@ static bool isnum(const char *s)
 	return true;
 }
 
-static long handle_long(const char *arg, long min, long max)
+static long handle_long(const char *arg, int base, long min, long max)
 {
 	long tmp;
 
 	if (isnum(arg) == false)
 		log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
-	tmp = ping_strtol(arg, NULL, 10);
+	tmp = ping_strtol(arg, NULL, base);
 	if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
 	    || (tmp < min || tmp > max))
 		log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %ld - %ld", arg, min, max);
@@ -44,10 +44,10 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 
 	switch (key) {
 	case 'c':
-		args->count = (uint16_t)handle_long(arg, 1, UINT16_MAX);
+		args->count = (uint16_t)handle_long(arg, 10, 1, UINT16_MAX);
 		break;
 	case 'i':
-		tmp = handle_long(arg, 0, UINT_MAX / 1000000);
+		tmp = handle_long(arg, 10, 0, UINT_MAX / 1000000);
 		args->interval = (useconds_t)(tmp * 1000000);
 		args->is_interval = true;
 		break;
@@ -55,16 +55,16 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		args->numeric = true;
 		break;
 	case ARG_TTL:
-		args->ttl = (uint8_t)handle_long(arg, 1, UINT8_MAX);
+		args->ttl = (uint8_t)handle_long(arg, 10, 1, UINT8_MAX);
 		break;
 	case 'v':
 		args->verbose = true;
 		break;
 	case 'w':
-		args->timeout = (time_t)handle_long(arg, 1, LONG_MAX);
+		args->timeout = (time_t)handle_long(arg, 10, 1, LONG_MAX);
 		break;
 	case 'W':
-		args->linger = (time_t)handle_long(arg, 1, LONG_MAX);
+		args->linger = (time_t)handle_long(arg, 10, 1, LONG_MAX);
 		break;
 	case 'f':
 		if (getuid() != 0)
@@ -72,12 +72,14 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		args->flood = true;
 		break;
 	case 'l':
-		args->preload = (uint16_t)handle_long(arg, 0, UINT16_MAX);
+		args->preload = (uint16_t)handle_long(arg, 10, 0, UINT16_MAX);
 		break;
 	case 'p':
+		args->pattern = (uint16_t)handle_long(arg, 16, 0, INT_MAX);
+		args->is_pattern = true;
 		break;
 	case 's':
-		args->size = (uint16_t)handle_long(arg, 0, UINT16_MAX);
+		args->size = (uint16_t)handle_long(arg, 10, 0, UINT16_MAX);
 		break;
 	case MARG_KEY_ARG:
 		new = ft_lstnew((void *)arg);

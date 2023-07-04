@@ -46,7 +46,8 @@ struct arguments {
 	time_t linger;
 	bool flood;
 	uint16_t preload;
-	// TODO pattern
+	bool is_pattern;
+	int pattern;
 	uint16_t size;
 };
 

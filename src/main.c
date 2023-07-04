@@ -63,6 +63,8 @@ struct progconf progconf = {
 		.linger = 0,
 		.flood = false,
 		.preload = 0,
+		.is_pattern = false,
+		.pattern = 0,
 		.size = PKT_DATA_SIZE
 	},
 	.start = { .tv_sec = 0, .tv_usec = 0 },
