@@ -75,6 +75,11 @@ static void handle_echoreply(struct ping_stat *const stat,
 	stat->tsum += time;
 	stat->tsumsq += time * time;
 
+	++progconf.ping_num_recv;
+
+	if (progconf.args.flood)
+		return;
+
 	if (progconf.ping_num_xmit - 1 == ntohs(icmphdr->un.echo.sequence)) {
 		print_info();
 		printf("icmp_seq=%d ttl=%d time=%.3lf ms\n",
@@ -86,8 +91,6 @@ static void handle_echoreply(struct ping_stat *const stat,
 		printf("received icmp_seq=%d later\n",
 		       ntohs(icmphdr->un.echo.sequence));
 	}
-
-	++progconf.ping_num_recv;
 }
 
 int pong(const int sockfd, struct ping_stat *const stat)
@@ -104,8 +107,13 @@ int pong(const int sockfd, struct ping_stat *const stat)
 	size = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
 	if (size <= 0) {
 		if (errno == EINTR || errno == EAGAIN) {
-			log_verbose("request timed out for icmp_seq=%d",
-				    progconf.ping_num_xmit - 1);
+			if (progconf.args.flood) {
+				printf(".");
+				// fflush(stdout);
+			} else {
+				log_verbose("request timed out for icmp_seq=%d",
+					    progconf.ping_num_xmit - 1);
+			}
 			return 1;
 		} else {
 			log_pexit(EXIT_FAILURE, "recvfrom");
