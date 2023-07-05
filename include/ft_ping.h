@@ -47,7 +47,7 @@ struct arguments {
 	bool flood;
 	uint16_t preload;
 	bool is_pattern;
-	int pattern;
+	const unsigned char *pattern;
 	uint16_t size;
 };
 

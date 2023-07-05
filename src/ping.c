@@ -62,17 +62,18 @@ static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
 
 static void ping_hdrmsg(char *host)
 {
-	int hex_width = 0;
-	int pattern = progconf.args.pattern;
-
-	if (progconf.args.is_pattern == true) {
-		while (pattern != 0) {
-			pattern /= 16;
-			++hex_width;
+	if (progconf.args.is_pattern) {
+		printf("PATTERN: 0x");
+		for (const unsigned char *p = progconf.args.pattern; *p != '\0';) {
+			if (*(p + 1) == '\0') {
+				printf("0%c", *p);
+				break;
+			} else {
+				printf("%c%c", *p, *(p + 1));
+			}
+			p += 2;
 		}
-		if (hex_width % 2 != 0)
-			++hex_width;
-		printf("PATTERN: 0x%0*x\n", hex_width, progconf.args.pattern);
+		printf("\n");
 	}
 
 	printf("PING %s (%s): %hu data bytes",
@@ -86,7 +87,7 @@ static void ping_hdrmsg(char *host)
 	printf("\n");
 }
 
-#include "libft/ft_fd.h"
+// #include "libft/ft_fd.h"
 static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 {
 	ssize_t err;
@@ -106,7 +107,7 @@ static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 	if (err == -1)
 		log_pexit(EXIT_FAILURE, "setsockopt");
 
-	ft_putmem_fd(progconf.pkt, sizeof(struct ping_pkt) + progconf.args.size, 1);
+	// ft_putmem_fd(progconf.pkt, sizeof(struct ping_pkt) + progconf.args.size, 1);
 	err = sendto(sockfd,
 		     progconf.pkt, sizeof(struct ping_pkt) + progconf.args.size,
 		     0, addr->ai_addr, addr->ai_addrlen);

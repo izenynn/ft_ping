@@ -41,41 +41,31 @@ void set_iphdr(void *pkt, in_addr_t daddr)
 	hdr->check = checksum(hdr, sizeof(struct iphdr));
 }
 
-// static int get_pattern_length(int pattern) {
-// 	int length = 0;
-//
-// 	while (pattern > 0) {
-// 		pattern >>= 8;
-// 		++length;
-// 	}
-// 	return length;
-// }
-//
-// void set_payload(void *pkt)
-// {
-// 	char *payload = ((struct ping_pkt *)pkt)->payload;
-// 	int pattern, pattern_size;
-//
-// 	if (progconf.args.pattern == 0) {
-// 		ft_memset(payload, 0, progconf.args.size);
-// 		return;
-// 	}
-//
-// 	pattern = progconf.args.pattern;
-// 	pattern_size = get_pattern_length(pattern);
-//
-//
-// 	// reverse the pattern
-// 	char *ptr = (char *)&pattern;
-// 	char rev_pattern[pattern_size];
-// 	for (int i = 0; i < pattern_size; i++) {
-// 		rev_pattern[i] = ptr[pattern_size - 1 - i];
-// 	}
-//
-// 	for (int i = 0; i < progconf.args.size; ++i) {
-// 		payload[i] = rev_pattern[i % pattern_size];
-// 	}
-// }
+void set_payload(void *pkt)
+{
+	char *payload = ((struct ping_pkt *)pkt)->payload;
+
+	ft_memset(payload, 0, progconf.args.size);
+	// if (progconf.args.pattern == 0) {
+	// 	ft_memset(payload, 0, progconf.args.size);
+	// 	return;
+	// }
+
+	// pattern = progconf.args.pattern;
+	// pattern_size = get_pattern_length(pattern);
+	//
+	//
+	// // reverse the pattern
+	// char *ptr = (char *)&pattern;
+	// char rev_pattern[pattern_size];
+	// for (int i = 0; i < pattern_size; i++) {
+	// 	rev_pattern[i] = ptr[pattern_size - 1 - i];
+	// }
+	//
+	// for (int i = 0; i < progconf.args.size; ++i) {
+	// 	payload[i] = rev_pattern[i % pattern_size];
+	// }
+}
 
 void set_icmphdr(void *pkt, uint16_t seq)
 {
