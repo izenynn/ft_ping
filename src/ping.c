@@ -62,7 +62,7 @@ static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
 
 static void ping_hdrmsg(char *host)
 {
-	if (progconf.args.is_pattern) {
+	if (progconf.args.verbose && progconf.args.is_pattern) {
 		printf("PATTERN: 0x");
 		for (const unsigned char *p = progconf.args.pattern; *p != '\0';) {
 			if (*(p + 1) == '\0') {
