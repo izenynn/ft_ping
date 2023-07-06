@@ -7,8 +7,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <sys/time.h>
-#include <signal.h>
 #include <errno.h>
 #include <limits.h>
 
@@ -73,23 +71,11 @@ struct progconf progconf = {
 
 int main(int argc, char *argv[])
 {
-	// Arguments
 	marg_parse(&marg, argc, argv, &progconf.args);
 
-	// Init
-	if (gettimeofday(&progconf.start, NULL))
-		log_pexit(EX_OSERR, "gettimeofday");
-	progconf.pkt = malloc(sizeof(struct ping_pkt) + progconf.args.size);
-	if (progconf.pkt == NULL)
-		log_pexit(EX_OSERR, "malloc");
-	if (signal(SIGINT, sig_int) == SIG_ERR)
-		log_pexit(EX_OSERR, "signal");
-
-	// Ping
 	init();
 	ft_lstiter(progconf.args.hosts, ping);
 
-	// Clean up
 	ft_lstclear(&progconf.args.hosts, NULL);
 
 	return EX_OK;

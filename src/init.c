@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <sysexits.h>
+#include <signal.h>
+#include <sys/time.h>
 
 #include "ft_ping.h"
 
-int init(void)
+static void print_pattern(void)
 {
 	if (progconf.args.is_pattern) {
 		printf("PATTERN: 0x");
@@ -17,6 +20,19 @@ int init(void)
 		}
 		printf("\n");
 	}
+}
+
+int init(void)
+{
+	if (gettimeofday(&progconf.start, NULL))
+		log_pexit(EX_OSERR, "gettimeofday");
+	progconf.pkt = malloc(sizeof(struct ping_pkt) + progconf.args.size);
+	if (progconf.pkt == NULL)
+		log_pexit(EX_OSERR, "malloc");
+	if (signal(SIGINT, sig_int) == SIG_ERR)
+		log_pexit(EX_OSERR, "signal");
+
+	print_pattern();
 
 	return 0;
 }
