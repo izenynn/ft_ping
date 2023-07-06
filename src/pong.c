@@ -9,6 +9,8 @@
 #include <sys/time.h>
 #include <errno.h>
 
+#include "libft/ft_mem.h"
+
 #include "ft_ping.h"
 
 static int pkt_size = 0;
@@ -93,18 +95,27 @@ static void handle_echoreply(struct ping_stat *const stat,
 	}
 }
 
-enum pong_status pong(const int sockfd, struct ping_stat *const stat)
+// #include "libft/ft_fd.h"
+static ssize_t recv_pkt(int sockfd, struct sockaddr_in *sockaddr,
+			char *buffer, size_t buffer_size, enum pong_status *status)
 {
 	ssize_t size;
-	char buffer[1024];
-	struct timeval start, end;
-	struct iphdr *iphdr;
-	struct icmphdr *icmphdr;
+	struct iovec io = {
+		.iov_base = buffer,
+		.iov_len = buffer_size
+	};
+	struct msghdr msg = {
+		.msg_name = sockaddr,
+		.msg_namelen = sizeof(*sockaddr),
+		.msg_iov = &io,
+		.msg_iovlen = 1,
+		.msg_control = NULL,
+		.msg_controllen = 0,
+		.msg_flags = 0
+	};
 
-	memset(buffer, 0, sizeof(buffer));
-	gettimeofday(&start, NULL);
-	
-	size = recvfrom(sockfd, buffer, sizeof(buffer), 0, NULL, NULL);
+	size = recvmsg(sockfd, &msg, 0);
+	// ft_putmem_fd(buffer, (unsigned int)size, 1);
 	if (size <= 0) {
 		if (errno == EINTR || errno == EAGAIN) {
 			if (progconf.args.flood) {
@@ -114,11 +125,35 @@ enum pong_status pong(const int sockfd, struct ping_stat *const stat)
 				log_verbose("request timed out for icmp_seq=%d",
 					    progconf.ping_num_xmit - 1);
 			}
-			return PONG_TIMEOUT;
+			if (status != NULL)
+				*status = PONG_TIMEOUT;
 		} else {
-			log_pexit(EXIT_FAILURE, "recvfrom");
+			log_pexit(EXIT_FAILURE, "recvmsg");
 		}
 	}
+
+	if (status != NULL)
+		*status = PONG_SUCCESS;
+	return size;
+}
+
+enum pong_status pong(const int sockfd, struct addrinfo *addr,
+		      struct ping_stat *const stat)
+{
+	ssize_t size;
+	char buffer[1024];
+	struct timeval start, end;
+	struct iphdr *iphdr;
+	struct icmphdr *icmphdr;
+
+	ft_memset(buffer, 0, sizeof(buffer));
+	gettimeofday(&start, NULL);
+	
+	enum pong_status status;
+	size = recv_pkt(sockfd, (struct sockaddr_in *)addr->ai_addr,
+			buffer, sizeof(buffer), &status);
+	if (status != PONG_SUCCESS)
+		return status;
 	
 	gettimeofday(&end, NULL);
 	double time = (double)(end.tv_sec - start.tv_sec) * 1000.0

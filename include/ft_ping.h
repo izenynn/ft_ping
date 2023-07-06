@@ -94,12 +94,14 @@ void log_pexit(const int err, const char *s);
 
 // init.c
 int init(void);
+int finish(void);
 	
 // ping.c
 void ping(void *host);
 
 // pong.c
-enum pong_status pong(const int sockfd, struct ping_stat *const stat);
+enum pong_status pong(const int sockfd, struct addrinfo *addr,
+		      struct ping_stat *const stat);
 
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);

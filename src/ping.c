@@ -168,7 +168,7 @@ void ping(void *host)
 	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
 		for (status = PONG_RETRY; status == PONG_RETRY;)
-			status = pong(sockfd, &stat);
+			status = pong(sockfd, addr, &stat);
 		++seq;
 		if (!progconf.loop || seq >= progconf.args.count)
 			break;

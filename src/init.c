@@ -36,3 +36,11 @@ int init(void)
 
 	return 0;
 }
+
+int finish(void)
+{
+	free(progconf.pkt);
+	ft_lstclear(&progconf.args.hosts, NULL);
+
+	return 0;
+}

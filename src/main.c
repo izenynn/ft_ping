@@ -75,8 +75,7 @@ int main(int argc, char *argv[])
 
 	init();
 	ft_lstiter(progconf.args.hosts, ping);
-
-	ft_lstclear(&progconf.args.hosts, NULL);
+	finish();
 
 	return EX_OK;
 }
