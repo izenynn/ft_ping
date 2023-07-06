@@ -43,6 +43,7 @@ LIB_DIR = lib
 SRC_FILES = \
 	main.c			\
 	args.c			\
+	init.c			\
 	pkt.c			\
 	ping.c			\
 	pong.c			\

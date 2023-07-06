@@ -92,10 +92,8 @@ void log_exit(const int err, const char *fmt, ...);
 void log_perror(const char *s);
 void log_pexit(const int err, const char *s);
 
-// pkt.c
-void set_iphdr(void *pkt, in_addr_t daddr);
-void set_payload(void *pkt);
-void set_icmphdr(void *pkt, uint16_t seq);
+// init.c
+int init(void);
 	
 // ping.c
 void ping(void *host);
@@ -106,6 +104,11 @@ enum pong_status pong(const int sockfd, struct ping_stat *const stat);
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);
 int reverse_dns(struct addrinfo *addr);
+
+// pkt.c
+void set_iphdr(void *pkt, in_addr_t daddr);
+void set_payload(void *pkt);
+void set_icmphdr(void *pkt, uint16_t seq);
 
 // signal.c
 void sig_int(int sig);
