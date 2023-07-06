@@ -76,7 +76,7 @@ int parse_opt(int key, const char *arg, struct marg_state *state)
 		break;
 	case 'p':
 		handle_long(arg, 16, 0, INT_MAX);
-		args->pattern = (const unsigned char *)arg;
+		args->pattern = arg;
 		args->is_pattern = true;
 		break;
 	case 's':

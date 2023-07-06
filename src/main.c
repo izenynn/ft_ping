@@ -86,6 +86,19 @@ int main(int argc, char *argv[])
 		log_pexit(EX_OSERR, "signal");
 
 	// Ping
+	if (progconf.args.verbose && progconf.args.is_pattern) {
+		printf("PATTERN: 0x");
+		for (const char *p = progconf.args.pattern; *p != '\0';) {
+			if (*(p + 1) == '\0') {
+				printf("0%c", *p);
+				break;
+			} else {
+				printf("%c%c", *p, *(p + 1));
+			}
+			p += 2;
+		}
+		printf("\n");
+	}
 	ft_lstiter(progconf.args.hosts, ping);
 
 	// Clean up

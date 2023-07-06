@@ -62,20 +62,6 @@ static void ping_init(char *host, struct addrinfo **addr, int *sockfd)
 
 static void ping_hdrmsg(char *host)
 {
-	if (progconf.args.verbose && progconf.args.is_pattern) {
-		printf("PATTERN: 0x");
-		for (const unsigned char *p = progconf.args.pattern; *p != '\0';) {
-			if (*(p + 1) == '\0') {
-				printf("0%c", *p);
-				break;
-			} else {
-				printf("%c%c", *p, *(p + 1));
-			}
-			p += 2;
-		}
-		printf("\n");
-	}
-
 	printf("PING %s (%s): %hu data bytes",
 		(char *)host,
 		progconf.host,
@@ -143,7 +129,7 @@ static void ping_statmsg(struct ping_stat *const stat)
 	}
 }
 
-int ping_sleep(enum pong_status status)
+static int ping_sleep(enum pong_status status)
 {
 	struct timeval time;
 

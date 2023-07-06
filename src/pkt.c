@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "libft/ft_mem.h"
+#include "libft/ft_str.h"
 
 #include "ft_ping.h"
 
@@ -41,30 +42,37 @@ void set_iphdr(void *pkt, in_addr_t daddr)
 	hdr->check = checksum(hdr, sizeof(struct iphdr));
 }
 
+static char htob(const char *hex)
+{
+	char byte[3];
+	ft_memcpy(byte, hex, 2);
+	byte[2] = '\0';
+
+	return (char)ping_strtol(byte, NULL, 16);
+}
+
 void set_payload(void *pkt)
 {
 	char *payload = ((struct ping_pkt *)pkt)->payload;
+	char *i;
+	const char *pattern = progconf.args.pattern;
+	const char *j;
+	intptr_t pattern_len;
 
-	ft_memset(payload, 0, progconf.args.size);
-	// if (progconf.args.pattern == 0) {
-	// 	ft_memset(payload, 0, progconf.args.size);
-	// 	return;
-	// }
+	if (!progconf.args.is_pattern) {
+		ft_memset(payload, 0, progconf.args.size);
+		return;
+	}
 
-	// pattern = progconf.args.pattern;
-	// pattern_size = get_pattern_length(pattern);
-	//
-	//
-	// // reverse the pattern
-	// char *ptr = (char *)&pattern;
-	// char rev_pattern[pattern_size];
-	// for (int i = 0; i < pattern_size; i++) {
-	// 	rev_pattern[i] = ptr[pattern_size - 1 - i];
-	// }
-	//
-	// for (int i = 0; i < progconf.args.size; ++i) {
-	// 	payload[i] = rev_pattern[i % pattern_size];
-	// }
+	pattern_len = (intptr_t)ft_strlen(pattern);
+
+	j = pattern;
+	for (i = payload; i - payload < progconf.args.size; ++i) {
+		if (j - pattern >= pattern_len)
+			j = pattern;
+		*i = htob(j);
+		j += 2;
+	}
 }
 
 void set_icmphdr(void *pkt, uint16_t seq)
