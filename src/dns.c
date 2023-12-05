@@ -5,6 +5,8 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "libft/ft_mem.h"
+
 #include "ft_ping.h"
 
 struct addrinfo *get_host_info(const char *const host, int family)
@@ -13,7 +15,7 @@ struct addrinfo *get_host_info(const char *const host, int family)
 	struct addrinfo *res;
 	int err;
 
-	memset(&hints, 0, sizeof hints);
+	ft_memset(&hints, 0, sizeof hints);
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_RAW;
 	hints.ai_protocol = IPPROTO_ICMP;
