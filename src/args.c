@@ -26,12 +26,13 @@ static bool isnum(const char *s)
 static long handle_long(const char *arg, int base, long min, long max)
 {
 	long tmp;
+	char *endptr;
 
 	if (isnum(arg) == false)
 		log_exit(marg_err_exit_status, "invalid value ('%s')", arg);
-	tmp = ping_strtol(arg, NULL, base);
+	tmp = ping_strtol(arg, &endptr, base);
 	if (((tmp == LONG_MIN || tmp == LONG_MAX) && errno == ERANGE)
-	    || (tmp < min || tmp > max))
+	    || (tmp < min || tmp > max) || *endptr != '\0')
 		log_exit(marg_err_exit_status, "invalid argument ('%s') out range: %ld - %ld", arg, min, max);
 	return tmp;
 }

@@ -100,8 +100,7 @@ int finish(void);
 void ping(void *host);
 
 // pong.c
-enum pong_status pong(const int sockfd, struct addrinfo *addr,
-		      struct ping_stat *const stat);
+enum pong_status pong(const int sockfd, struct ping_stat *const stat);
 
 // dns.c
 struct addrinfo *get_host_info(const char *const host, int family);

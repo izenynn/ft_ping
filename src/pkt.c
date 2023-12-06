@@ -27,9 +27,11 @@ void set_iphdr(void *pkt, in_addr_t daddr)
 {
 	struct iphdr *hdr = &((struct ping_pkt *)pkt)->iphdr;
 
-	ft_memset(hdr, 0, sizeof(struct iphdr));
+	ft_bzero(hdr, sizeof(struct iphdr));
 
 	hdr->ihl = 5; // Size in 32-bit words
+	// TODO ???
+	//hdr->ihl = sizeof(struct iphdr) / 4;
 	hdr->version = 4;
 	hdr->tos = 0;
 	hdr->tot_len = htons(sizeof(struct ping_pkt) + progconf.args.size);
@@ -60,7 +62,7 @@ void set_payload(void *pkt)
 	intptr_t pattern_len;
 
 	if (!progconf.args.is_pattern) {
-		ft_memset(payload, 0, progconf.args.size);
+		ft_bzero(payload, progconf.args.size);
 		return;
 	}
 
@@ -79,7 +81,7 @@ void set_icmphdr(void *pkt, uint16_t seq)
 {
 	struct icmphdr *hdr = &((struct ping_pkt *)pkt)->icmphdr;
 
-	ft_memset(hdr, 0, sizeof(struct icmphdr));
+	ft_bzero(hdr, sizeof(struct icmphdr));
 
 	hdr->type = ICMP_ECHO;
 	hdr->code = 0;

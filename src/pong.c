@@ -95,9 +95,8 @@ static void handle_echoreply(struct ping_stat *const stat,
 	}
 }
 
-// #include "libft/ft_fd.h"
-static ssize_t recv_pkt(int sockfd, struct sockaddr_in *sockaddr,
-			char *buffer, size_t buffer_size, enum pong_status *status)
+static ssize_t recv_pkt(int sockfd, char *buffer, size_t buffer_size,
+			enum pong_status *status)
 {
 	ssize_t size;
 	struct iovec io = {
@@ -105,8 +104,8 @@ static ssize_t recv_pkt(int sockfd, struct sockaddr_in *sockaddr,
 		.iov_len = buffer_size
 	};
 	struct msghdr msg = {
-		.msg_name = sockaddr,
-		.msg_namelen = sizeof(*sockaddr),
+		.msg_name = NULL,
+		.msg_namelen = 0,
 		.msg_iov = &io,
 		.msg_iovlen = 1,
 		.msg_control = NULL,
@@ -115,7 +114,7 @@ static ssize_t recv_pkt(int sockfd, struct sockaddr_in *sockaddr,
 	};
 
 	size = recvmsg(sockfd, &msg, 0);
-	// ft_putmem_fd(buffer, (unsigned int)size, 1);
+
 	if (size <= 0) {
 		if (errno == EINTR || errno == EAGAIN) {
 			if (progconf.args.flood) {
@@ -130,15 +129,15 @@ static ssize_t recv_pkt(int sockfd, struct sockaddr_in *sockaddr,
 		} else {
 			log_pexit(EXIT_FAILURE, "recvmsg");
 		}
+	} else {
+		if (status != NULL)
+			*status = PONG_SUCCESS;
 	}
 
-	if (status != NULL)
-		*status = PONG_SUCCESS;
 	return size;
 }
 
-enum pong_status pong(const int sockfd, struct addrinfo *addr,
-		      struct ping_stat *const stat)
+enum pong_status pong(const int sockfd, struct ping_stat *const stat)
 {
 	ssize_t size;
 	char buffer[1024];
@@ -146,12 +145,11 @@ enum pong_status pong(const int sockfd, struct addrinfo *addr,
 	struct iphdr *iphdr;
 	struct icmphdr *icmphdr;
 
-	ft_memset(buffer, 0, sizeof(buffer));
+	ft_bzero(buffer, sizeof(buffer));
 	gettimeofday(&start, NULL);
 	
 	enum pong_status status;
-	size = recv_pkt(sockfd, (struct sockaddr_in *)addr->ai_addr,
-			buffer, sizeof(buffer), &status);
+	size = recv_pkt(sockfd, buffer, sizeof(buffer), &status);
 	if (status != PONG_SUCCESS)
 		return status;
 	

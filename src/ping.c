@@ -80,8 +80,8 @@ static void send_pkt(int sockfd, struct addrinfo *addr, uint16_t seq)
 
 	ft_bzero(progconf.pkt, sizeof(struct ping_pkt) + progconf.args.size);
 	set_iphdr(progconf.pkt, ((struct sockaddr_in *)addr->ai_addr)->sin_addr.s_addr);
-	set_payload(progconf.pkt);
 	set_icmphdr(progconf.pkt, seq);
+	set_payload(progconf.pkt);
 
 	/*
 	 * IP_HDRINCL must be set on the socket so that
@@ -168,7 +168,7 @@ void ping(void *host)
 	while (progconf.loop) {
 		send_pkt(sockfd, addr, seq);
 		for (status = PONG_RETRY; status == PONG_RETRY;)
-			status = pong(sockfd, addr, &stat);
+			status = pong(sockfd, &stat);
 		++seq;
 		if (!progconf.loop || seq >= progconf.args.count)
 			break;

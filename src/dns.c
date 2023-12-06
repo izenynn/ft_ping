@@ -15,7 +15,7 @@ struct addrinfo *get_host_info(const char *const host, int family)
 	struct addrinfo *res;
 	int err;
 
-	ft_memset(&hints, 0, sizeof hints);
+	ft_bzero(&hints, sizeof(hints));
 	hints.ai_family = family;
 	hints.ai_socktype = SOCK_RAW;
 	hints.ai_protocol = IPPROTO_ICMP;
@@ -32,6 +32,7 @@ struct addrinfo *get_host_info(const char *const host, int family)
 	return res;
 }
 
+// FIXME only print error on verbose
 int reverse_dns(struct addrinfo *addr)
 {
 	int err;
