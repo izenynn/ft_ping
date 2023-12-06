@@ -15,6 +15,46 @@
 
 static int pkt_size = 0;
 
+static void print_verbose(void) {
+	const char *pkt = (char *)progconf.pkt;
+	const struct iphdr *iphdr = (const struct iphdr *)pkt;
+	const struct icmphdr *icmphdr = (const struct icmphdr *)(pkt + (iphdr->ihl << 2));
+
+	char saddr[INET_ADDRSTRLEN];
+	char daddr[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(iphdr->saddr), saddr, INET_ADDRSTRLEN);
+	inet_ntop(AF_INET, &(iphdr->daddr), daddr, INET_ADDRSTRLEN);
+
+	printf("IP Hdr Dump:\n");
+	for (size_t i = 0; i < (size_t)(iphdr->ihl << 2); ++i) {
+		if (i % 2 == 0) printf(" ");
+		printf("%02x", ((char *)iphdr)[i] & 0xFF);
+	}
+	printf("\n");
+
+	printf("Vr HL TOS  Len   ID Flg  off TTL Pro  cks      Src      Dst     Data\n");
+	printf(" %1x %2x  %02x %04x %04x   %1x %04x  %02x  %02x %04x %-10s %-10s\n",
+		iphdr->version,
+		iphdr->ihl,
+		iphdr->tos,
+		ntohs(iphdr->tot_len),
+		ntohs(iphdr->id),
+		(ntohs(iphdr->frag_off) >> 13) & 0x07,
+		ntohs(iphdr->frag_off) & 0x1FFF,
+		iphdr->ttl,
+		iphdr->protocol,
+		ntohs(iphdr->check),
+		saddr,
+		daddr);
+
+	printf("ICMP: type %d, code %d, size %ld, id 0x%04x, seq 0x%04x\n",
+		icmphdr->type,
+		icmphdr->code,
+		sizeof(struct iphdr) + sizeof(struct icmphdr) + progconf.args.size - (iphdr->ihl << 2),
+		ntohs(icmphdr->un.echo.id),
+		ntohs(icmphdr->un.echo.sequence));
+}
+
 static void print_info(void)
 {
 	printf("%d bytes from ", pkt_size);
@@ -28,6 +68,8 @@ static void print_info(void)
 static void parse_pkt(char *buffer, ssize_t size,
 		      struct iphdr **iphdr, struct icmphdr **icmphdr)
 {
+	int iphdr_len;
+
 	if (size < (int)(sizeof(struct iphdr) + sizeof(struct icmphdr))) {
 		log_exit(EXIT_FAILURE,
 			  "incomplete echo reply package (size: '%z') icmp packet min size: %z",
@@ -36,7 +78,7 @@ static void parse_pkt(char *buffer, ssize_t size,
 
 	*iphdr = (struct iphdr *)buffer;
 	// iphdr->ihl is in 32-bit words, so we shift to get the length in bytes
-	int iphdr_len = (*iphdr)->ihl << 2;
+	iphdr_len = (*iphdr)->ihl << 2;
 	*icmphdr = (struct icmphdr *)(buffer + iphdr_len);
 
 	pkt_size = ntohs((*iphdr)->tot_len) - iphdr_len;
@@ -64,6 +106,9 @@ static void handle_other(struct icmphdr *icmphdr)
 	default:
 		printf("Unknown ICMP type\n");
 	}
+
+	if (progconf.args.verbose)
+		print_verbose();
 }
 
 static void handle_echoreply(struct ping_stat *const stat,
@@ -114,7 +159,6 @@ static ssize_t recv_pkt(int sockfd, char *buffer, size_t buffer_size,
 	};
 
 	size = recvmsg(sockfd, &msg, 0);
-
 	if (size <= 0) {
 		if (errno == EINTR || errno == EAGAIN) {
 			if (progconf.args.flood) {
@@ -124,14 +168,12 @@ static ssize_t recv_pkt(int sockfd, char *buffer, size_t buffer_size,
 				log_verbose("request timed out for icmp_seq=%d",
 					    progconf.ping_num_xmit - 1);
 			}
-			if (status != NULL)
-				*status = PONG_TIMEOUT;
+			*status = PONG_TIMEOUT;
 		} else {
 			log_pexit(EXIT_FAILURE, "recvmsg");
 		}
 	} else {
-		if (status != NULL)
-			*status = PONG_SUCCESS;
+		*status = PONG_SUCCESS;
 	}
 
 	return size;
@@ -149,6 +191,7 @@ enum pong_status pong(const int sockfd, struct ping_stat *const stat)
 	gettimeofday(&start, NULL);
 	
 	enum pong_status status;
+	// size <= 0 handled inside
 	size = recv_pkt(sockfd, buffer, sizeof(buffer), &status);
 	if (status != PONG_SUCCESS)
 		return status;
