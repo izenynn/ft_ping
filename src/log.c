@@ -8,14 +8,19 @@
 
 #include "ft_ping.h"
 
+static void log_format(FILE *output, const char *fmt, va_list args)
+{
+	fprintf(output, "%s: ", marg_program_name);
+	vfprintf(output, fmt, args);
+	fprintf(output, "\n");
+}
+
 void log_info(const char *fmt, ...)
 {
 	va_list args;
 
 	va_start(args, fmt);
-	fprintf(stdout, "%s: ", marg_program_name);
-	vfprintf(stdout, fmt, args);
-	fprintf(stdout, "\n");
+	log_format(stdout, fmt, args);
 	va_end(args);
 }
 
@@ -24,9 +29,7 @@ void log_error(const char *fmt, ...)
 	va_list args;
 
 	va_start(args, fmt);
-	fprintf(stderr, "%s: ", marg_program_name);
-	vfprintf(stderr, fmt, args);
-	fprintf(stderr, "\n");
+	log_format(stderr, fmt, args);
 	va_end(args);
 }
 
@@ -36,9 +39,7 @@ void log_vinfo(const char *fmt, ...)
 
 	if (progconf.args.verbose) {
 		va_start(args, fmt);
-		fprintf(stderr, "%s: ", marg_program_name);
-		vfprintf(stderr, fmt, args);
-		fprintf(stderr, "\n");
+		log_format(stdout, fmt, args);
 		va_end(args);
 	}
 }
@@ -49,9 +50,7 @@ void log_verror(const char *fmt, ...)
 
 	if (progconf.args.verbose) {
 		va_start(args, fmt);
-		fprintf(stdout, "%s: ", marg_program_name);
-		vfprintf(stdout, fmt, args);
-		fprintf(stdout, "\n");
+		log_format(stderr, fmt, args);
 		va_end(args);
 	}
 }
@@ -61,9 +60,7 @@ void log_exit(const int err, const char *fmt, ...)
 	va_list args;
 
 	va_start(args, fmt);
-	fprintf(stderr, "%s: ", marg_program_name);
-	vfprintf(stderr, fmt, args);
-	fprintf(stderr, "\n");
+	log_format(stderr, fmt, args);
 	va_end(args);
 	exit(err);
 }
