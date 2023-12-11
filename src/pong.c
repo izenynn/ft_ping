@@ -165,8 +165,8 @@ static ssize_t recv_pkt(int sockfd, char *buffer, size_t buffer_size,
 				printf(".");
 				// fflush(stdout);
 			} else {
-				log_verbose("request timed out for icmp_seq=%d",
-					    progconf.ping_num_xmit - 1);
+				log_vinfo("request timed out for icmp_seq=%d",
+					  progconf.ping_num_xmit - 1);
 			}
 			*status = PONG_TIMEOUT;
 		} else {

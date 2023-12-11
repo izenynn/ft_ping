@@ -19,7 +19,31 @@ void log_info(const char *fmt, ...)
 	va_end(args);
 }
 
-void log_verbose(const char *fmt, ...)
+void log_error(const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+	fprintf(stderr, "%s: ", marg_program_name);
+	vfprintf(stderr, fmt, args);
+	fprintf(stderr, "\n");
+	va_end(args);
+}
+
+void log_vinfo(const char *fmt, ...)
+{
+	va_list args;
+
+	if (progconf.args.verbose) {
+		va_start(args, fmt);
+		fprintf(stderr, "%s: ", marg_program_name);
+		vfprintf(stderr, fmt, args);
+		fprintf(stderr, "\n");
+		va_end(args);
+	}
+}
+
+void log_verror(const char *fmt, ...)
 {
 	va_list args;
 
@@ -30,17 +54,6 @@ void log_verbose(const char *fmt, ...)
 		fprintf(stdout, "\n");
 		va_end(args);
 	}
-}
-
-void log_error(const char *fmt, ...)
-{
-	va_list args;
-
-	va_start(args, fmt);
-	fprintf(stderr, "%s: ", marg_program_name);
-	vfprintf(stderr, fmt, args);
-	fprintf(stderr, "\n");
-	va_end(args);
 }
 
 void log_exit(const int err, const char *fmt, ...)

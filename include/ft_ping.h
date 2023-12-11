@@ -86,8 +86,9 @@ int parse_opt(int key, const char *arg, struct marg_state *state);
 	
 // log.c
 void log_info(const char *fmt, ...);
-void log_verbose(const char *fmt, ...);
 void log_error(const char *fmt, ...);
+void log_vinfo(const char *fmt, ...);
+void log_verror(const char *fmt, ...);
 void log_exit(const int err, const char *fmt, ...);
 void log_perror(const char *s);
 void log_pexit(const int err, const char *s);
