@@ -18,7 +18,7 @@
 // Arguments
 
 const char *marg_program_version = "ft_ping 0.0.1";
-const char *marg_program_bug_address = "<me@izenynn.com>";
+const char *marg_program_bug_address = "<https://github.com/izenynn/ft_ping>";
 
 static char doc[] = "Send ICMP ECHO_REQUEST packets to network hosts.";
 static char args_doc[] = "HOST ...";
